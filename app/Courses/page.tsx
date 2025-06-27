@@ -12,7 +12,7 @@ export default function Page() {
       <div className="flex items-center justify-between gap-7">
         <p className="text-[#00000087] text-sm">Let’s check your update today.</p>
         <button
-          onClick={() => router.push("/course")}
+          onClick={() => router.push("/Course")}
           className="bg-violet-600 flex items-center gap-1 text-white text-sm px-4 py-2 rounded-md hover:bg-violet-700 transition"
         >
           <FaPlus />

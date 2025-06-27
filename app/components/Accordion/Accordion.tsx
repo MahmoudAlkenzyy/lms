@@ -37,22 +37,26 @@ const Accordion: React.FC<Props> = ({ chapter, disabled, onEdit, onDelete }) => 
         <div className="font-medium text-sm">{chapter.name}</div>
         <div className="flex items-center gap-3">
           <button
+            className="cursor-pointer "
+            type="button"
             disabled={disabled}
             onClick={(e) => {
               e.stopPropagation();
               onEdit();
             }}
           >
-            <FaEdit size={14} className="text-blue-500" />
+            <FaEdit size={16} className="text-blue-500" />
           </button>
           <button
+            className="cursor-pointer "
+            type="button"
             disabled={disabled}
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
             }}
           >
-            <FaTrashAlt size={14} className="text-red-500" />
+            <FaTrashAlt size={16} className="text-red-500" />
           </button>
           {open ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
         </div>

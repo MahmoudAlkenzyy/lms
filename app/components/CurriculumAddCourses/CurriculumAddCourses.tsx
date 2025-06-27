@@ -4,6 +4,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import AddSectionModal from "../AddSectionModal/AddSectionModal";
 import Accordion from "../Accordion/Accordion";
 import { useRouter } from "next/navigation";
+import { Backend_Url, Fake_Token } from "../../../constants";
+import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
+import { toast } from "react-toastify";
 
 interface Lesson {
   id: string;
@@ -26,6 +29,7 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(false);
+  const [chapterToDelete, setChapterToDelete] = useState<{ id: string; name: string } | null>(null);
   const router = useRouter();
 
   const fetchChapters = useCallback(async () => {
@@ -33,18 +37,20 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
 
     setLoading(true);
     try {
-      const res = await fetch("https://localhost:7022/api/Chapters/GetChapters", {
+      const res = await fetch(`${Backend_Url}/Chapters/GetChapters`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer your_token_here",
+          Authorization: Fake_Token,
         },
         body: JSON.stringify({ courseId: id }),
       });
 
       const data = await res.json();
-      if (data.isSuccess) {
+      if (data.isSuccess && data.chapters?.items) {
         setChapters(data.chapters.items);
+      } else {
+        console.warn("❌ No chapters found or unexpected response:", data);
       }
     } catch (err) {
       console.error("❌ Error fetching chapters:", err);
@@ -56,6 +62,30 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
   useEffect(() => {
     fetchChapters();
   }, [fetchChapters]);
+
+  const handleDeleteChapter = async () => {
+    if (!chapterToDelete) return;
+    toast.loading("Deleting section...");
+    try {
+      const res = await fetch(`${Backend_Url}/Chapters/DeleteChapter?Id=${chapterToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "text/plain",
+          Authorization: Fake_Token,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed");
+
+      toast.dismiss();
+      toast.success("Section deleted successfully");
+      setChapterToDelete(null);
+      fetchChapters();
+    } catch (err) {
+      toast.dismiss();
+      toast.error("❌ Failed to delete section");
+    }
+  };
 
   return (
     <div className="bg-white rounded shadow p-5 pt-2 ps-2">
@@ -82,17 +112,22 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
             key={chapter.id}
             chapter={chapter}
             disabled={disabled}
-            onEdit={() => router.push(`/lessons?courseid=${id}`)}
-            onDelete={() => {
-              if (confirm("Are you sure you want to delete this chapter?")) {
-                // delete API logic here
-              }
-            }}
+            onEdit={() => router.push(`/Sections?courseid=${id}&chapterid=${chapter.id}`)}
+            onDelete={() => setChapterToDelete({ id: chapter.id, name: chapter.name })}
           />
         ))}
 
         <AddSectionModal id={id} isOpen={isOpen} setIsOpen={setIsOpen} refetch={fetchChapters} />
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={!!chapterToDelete}
+        onClose={() => setChapterToDelete(null)}
+        onConfirm={handleDeleteChapter}
+        title="Delete Section"
+        courseName={chapterToDelete?.name || ""}
+        message={`Are you sure you want to delete section "${chapterToDelete?.name}"? This action cannot be undone.`}
+      />
     </div>
   );
 };

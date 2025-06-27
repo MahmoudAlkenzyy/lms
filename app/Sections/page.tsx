@@ -2,7 +2,7 @@
 import React from "react";
 import { CiTextAlignLeft } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
-import SectionsTable from "../components/SectionsTable/SectionsTable";
+import LessonsTable from "../components/LessonsTable/LessonsTable";
 
 const Page = () => {
   return (
@@ -23,14 +23,14 @@ const Page = () => {
           </button>
 
           <button className="px-6 py-1 text-sm text-white bg-black border border-white rounded  transition-colors duration-200 cursor-pointer">
-            cancle
+            cancel
           </button>
           <button className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors duration-200 cursor-pointer">
             Save to draft
           </button>
         </div>
       </div>
-      <SectionsTable />
+      <LessonsTable />
     </div>
   );
 };

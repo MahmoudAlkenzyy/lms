@@ -85,7 +85,7 @@ export default function AddCoursePageClient() {
           });
 
           toast.update(toastId, {
-            render: "✅ Saved successfully!",
+            render: " Saved successfully!",
             type: "success",
             isLoading: false,
             autoClose: 3000,
