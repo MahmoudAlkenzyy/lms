@@ -4,10 +4,11 @@ import { RxDividerVertical } from "react-icons/rx";
 
 import React from "react";
 
-const Textarea = ({ placeholder }: { placeholder: string }) => {
+const Textarea = ({ placeholder, id }: { placeholder: string; id: string }) => {
   return (
     <div className="flex flex-col pb-0 p-3 bg-white border shadow rounded-xl border-[#00000029] ">
       <textarea
+        id={id}
         placeholder={placeholder}
         rows={3}
         className="resize-none  p-2 border-[#00000029] focus:ring-0 focus-visible:outline-[#00000029]"

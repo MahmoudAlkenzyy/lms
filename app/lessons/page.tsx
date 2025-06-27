@@ -56,19 +56,38 @@ export default function Page() {
           <p className="text-xs text-[#FFFFFFB0]">let's check your update today.</p>
         </div>
         <button type="button" className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc]">
-          Save to draft
+          Save
         </button>
       </div>
 
       <div className="flex mt-4 gap-7">
-        {/* Left Side: Lesson Data */}
         <div className="w-2/3 flex flex-col gap-7">
           {lessonData ? (
             <>
-              <Textarea value={lessonData.intro} placeholder="Lesson intro" />
+              <Textarea id="intro" placeholder="Lesson intro" />
               <div className="flex flex-col p-3 bg-white border shadow rounded-xl border-[#00000029]">
-                <FileUploader bg="/images/uploadImageBg.png" type="video" />
-                <Textarea value={lessonData.description} placeholder="Lesson description" />
+                <FileUploader id="video" bg="/images/uploadImageBg.png" type="video" />
+                <Textarea id="description" placeholder="Lesson description" />
+              </div>
+              <div className="flex  gap-3">
+                <div className=" flex flex-col w-full">
+                  <FileUploader
+                    id="itemImages1-image"
+                    bg="/images/upoadFileBg3.png"
+                    type="image"
+                    className="flex-grow"
+                  />
+                  <Textarea id="itemImages1-description" placeholder="Enter content" />
+                </div>
+                <div className=" flex flex-col w-full">
+                  <FileUploader
+                    id="itemImages2-image"
+                    bg="/images/upoladFileBg2.png"
+                    type="image"
+                    className="flex-grow"
+                  />
+                  <Textarea id="itemImages1-description" placeholder="Enter content" />
+                </div>
               </div>
             </>
           ) : (
@@ -76,7 +95,6 @@ export default function Page() {
           )}
         </div>
 
-        {/* Right Side: CurriculumBar */}
         <div className="w-1/3">
           {courseId ? (
             <CurriculumBar courseId={courseId} onLessonClick={handleLessonClick} />

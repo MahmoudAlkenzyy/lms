@@ -10,9 +10,10 @@ interface FileUploaderProps {
   type: "image" | "video";
   className?: string;
   bg: string;
+  id: string;
 }
 
-export default function FileUploader({ type, className, bg }: FileUploaderProps) {
+export default function FileUploader({ type, className, bg, id }: FileUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState<string | null>(null);
@@ -47,7 +48,7 @@ export default function FileUploader({ type, className, bg }: FileUploaderProps)
 
   return (
     <div className={`flex flex-col p-3 pb-0 bg-white rounded-xl overflow-hidden ${className}`}>
-      <input type="file" ref={inputRef} onChange={handleFileChange} className="hidden" accept={acceptType} />
+      <input id={id} type="file" ref={inputRef} onChange={handleFileChange} className="hidden" accept={acceptType} />
 
       <div
         onClick={!file ? handleClick : undefined}
