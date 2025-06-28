@@ -1,32 +1,33 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaChevronDown, FaChevronUp, FaRegFileAlt } from "react-icons/fa";
+import { AnimatePresence, motion } from "framer-motion";
 import { Backend_Url, Fake_Token } from "@/constants";
-import { FaRegPlayCircle, FaRegFileAlt } from "react-icons/fa"; // أيقونات الفيديو والملفات
 
 interface Lesson {
   id: string;
   name: string;
-  lessonType: string;
   duration?: number;
 }
 
 interface Chapter {
   id: string;
   name: string;
-  description: string;
   lessons: Lesson[];
 }
 
-const CurriculumBar = ({
+export default function CurriculumBar({
   courseId,
+  currentLessonId,
   onLessonClick,
+  refetchTrigger,
 }: {
   courseId: string;
+  currentLessonId: string;
   onLessonClick: (lessonId: string) => void;
-}) => {
+  refetchTrigger: number;
+}) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [expandedChapterId, setExpandedChapterId] = useState<string | null>(null);
 
@@ -54,7 +55,7 @@ const CurriculumBar = ({
     };
 
     fetchChapters();
-  }, [courseId]);
+  }, [courseId, refetchTrigger]);
 
   const toggleChapter = (id: string) => {
     setExpandedChapterId((prev) => (prev === id ? null : id));
@@ -62,7 +63,7 @@ const CurriculumBar = ({
 
   return (
     <div className="flex flex-col gap-4 p-5 bg-white border shadow-lg rounded-xl border-[#E5E7EB] min-h-screen">
-      <h2 className="font-bold text-xl text-gray-800 mb-2"> Curriculum</h2>
+      <h2 className="font-bold text-xl text-gray-800 mb-2">Curriculum</h2>
       <div className="w-full border-b border-gray-200 mb-2" />
 
       {chapters.length === 0 ? (
@@ -78,7 +79,7 @@ const CurriculumBar = ({
           >
             <div
               onClick={() => toggleChapter(chapter.id)}
-              className="cursor-pointer px-4 py-3  flex justify-between items-center hover:bg-gray-200 transition-colors"
+              className="cursor-pointer px-4 py-3 flex justify-between items-center hover:bg-gray-200 transition-colors"
             >
               <h3 className="font-medium text-gray-700">{chapter.name}</h3>
               {expandedChapterId === chapter.id ? (
@@ -99,22 +100,20 @@ const CurriculumBar = ({
                 >
                   <div className="flex flex-col gap-3 p-4 bg-white">
                     {chapter.lessons.map((lesson) => {
+                      const isActive = lesson.id === currentLessonId;
                       return (
                         <motion.div
                           key={lesson.id}
                           onClick={() => onLessonClick(lesson.id)}
-                          //   whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.98 }}
-                          className="flex items-center justify-between gap-4 p-3  hover:bg-violet-50 cursor-pointer rounded-lg transition-all"
+                          className={`flex items-center justify-between gap-4 p-3 rounded-lg transition-all cursor-pointer ${
+                            isActive ? "bg-violet-100 border border-violet-400" : "hover:bg-violet-50"
+                          }`}
                         >
-                          {/* Left side: icon + name */}
                           <div className="flex items-center gap-2 text-gray-800">
                             <FaRegFileAlt className="text-blue-500 text-lg" />
-
                             <span className="font-medium text-sm">{lesson.name}</span>
                           </div>
-
-                          {/* Right side: duration */}
                           <span className="text-xs text-gray-500">{lesson.duration ?? "N/A"} min</span>
                         </motion.div>
                       );
@@ -128,6 +127,4 @@ const CurriculumBar = ({
       )}
     </div>
   );
-};
-
-export default CurriculumBar;
+}

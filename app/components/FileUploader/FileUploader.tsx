@@ -1,87 +1,76 @@
 "use client";
 
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import { useRef } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { RxDividerVertical } from "react-icons/rx";
 
 interface FileUploaderProps {
-  type: "image" | "video";
-  className?: string;
-  bg: string;
   id: string;
+  type: "image" | "video";
+  bg: string;
+  className?: string;
+  value?: string;
+  onChange?: (base64: string) => void;
 }
 
-export default function FileUploader({ type, className, bg, id }: FileUploaderProps) {
+export default function FileUploader({ id, type, bg, className, value, onChange }: FileUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [previewURL, setPreviewURL] = useState<string | null>(null);
 
-  const handleClick = () => {
-    inputRef.current?.click();
-  };
+  const handleClick = () => inputRef.current?.click();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
+  const toBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
 
-      if (selectedFile.type.startsWith("image") || selectedFile.type.startsWith("video")) {
-        const url = URL.createObjectURL(selectedFile);
-        setPreviewURL(url);
-      } else {
-        setPreviewURL(null);
-      }
-    }
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const base64 = await toBase64(file);
+    onChange?.(base64);
   };
 
   const handleDelete = () => {
-    setFile(null);
-    setPreviewURL(null);
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
+    if (inputRef.current) inputRef.current.value = "";
+    onChange?.("");
   };
 
   const acceptType = type === "image" ? "image/*" : "video/*";
 
   return (
     <div className={`flex flex-col p-3 pb-0 bg-white rounded-xl overflow-hidden ${className}`}>
-      <input id={id} type="file" ref={inputRef} onChange={handleFileChange} className="hidden" accept={acceptType} />
+      <input id={id} type="file" ref={inputRef} onChange={handleFileChange} accept={acceptType} className="hidden" />
 
       <div
-        onClick={!file ? handleClick : undefined}
-        className="relative w-full h-64 rounded overflow-hidden bg-[#fff8] flex items-center justify-center cursor-pointer hover:bg-[#fff8]"
+        onClick={!value ? handleClick : undefined}
+        className="relative w-full h-64 rounded overflow-hidden flex items-center justify-center cursor-pointer"
       >
-        {!file ? (
+        {!value ? (
           <>
             <img src={bg} alt="background" className="absolute w-full h-full object-cover" />
-            <Image fill objectFit="cover" src="/images/uploadLayer.svg" alt="overlay" className="z-10 bg-[#ffffffbc]" />
+            <Image fill src="/images/uploadLayer.svg" alt="overlay" className="z-10 bg-[#ffffffbc]" />
           </>
-        ) : previewURL ? (
-          type === "image" ? (
-            <img src={previewURL} alt="preview" className="object-contain w-full h-full" />
-          ) : (
-            <video controls src={previewURL} className="object-contain w-full h-full" />
-          )
+        ) : type === "image" ? (
+          <img src={value} alt="preview" className="object-contain w-full h-full" />
         ) : (
-          <div className="text-center">
-            <p className="text-sm font-medium">{file.name}</p>
-            <p className="text-xs text-gray-600">{type.toUpperCase()} uploaded</p>
-          </div>
+          <video controls src={value} className="object-contain w-full h-full" />
         )}
       </div>
 
       <div className="h-[1px] bg-[#00000029] w-full mt-2"></div>
 
       <div className="self-end bg-[#7337FF36] flex border border-[#00000029] w-fit rounded-lg py-1 px-3 m-2">
-        <button onClick={handleClick}>
+        <button type="button" onClick={handleClick}>
           <FaRegEdit size={20} className="text-[#7337FF4e]" />
         </button>
         <RxDividerVertical className="text-[#00000029]" />
-        <button onClick={handleDelete}>
-          <RiDeleteBinLine size={20} className=" text-[#EF3826]" />
+        <button type="button" onClick={handleDelete}>
+          <RiDeleteBinLine size={20} className="text-[#EF3826]" />
         </button>
       </div>
     </div>
