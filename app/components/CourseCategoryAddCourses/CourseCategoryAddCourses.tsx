@@ -43,7 +43,7 @@ const CourseCategoryAddCourses = ({ disabled }: { disabled: boolean }) => {
           setError("Failed to load categories");
         }
       } catch (err) {
-        console.error("❌ Error fetching categories:", err);
+        console.error("  Error fetching categories:", err);
         setError("Network error");
       } finally {
         setLoading(false);

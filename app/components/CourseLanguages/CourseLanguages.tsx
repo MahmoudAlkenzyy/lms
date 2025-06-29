@@ -43,7 +43,7 @@ const CourseLanguages = ({ disabled }: { disabled: boolean }) => {
           setError("Failed to load languages");
         }
       } catch (err) {
-        console.error("❌ Error fetching languages:", err);
+        console.error("  Error fetching languages:", err);
         setError("Network error");
       } finally {
         setLoading(false);

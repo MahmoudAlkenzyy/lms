@@ -66,10 +66,10 @@ const LessonsTable = () => {
 
         setLessons(mappedLessons);
       } else {
-        console.warn("❌ No lessons found or unexpected format");
+        console.warn("  No lessons found or unexpected format");
       }
     } catch (err) {
-      console.error("❌ Failed to fetch lessons", err);
+      console.error("  Failed to fetch lessons", err);
     } finally {
       setLoading(false);
     }
@@ -93,8 +93,8 @@ const LessonsTable = () => {
       setLessonToDelete(null);
       fetchLessons();
     } catch (error) {
-      console.error("❌ Error deleting lesson", error);
-      toast.error("❌ Failed to delete lesson");
+      console.error("  Error deleting lesson", error);
+      toast.error("  Failed to delete lesson");
     }
   };
 

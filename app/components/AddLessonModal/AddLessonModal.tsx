@@ -29,7 +29,7 @@ const AddLessonModal = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!chapterId) {
-      toast.error("❌ Chapter ID not found in URL.");
+      toast.error("  Chapter ID not found in URL.");
       return;
     }
 
@@ -62,7 +62,7 @@ const AddLessonModal = ({
       //   setLessonIntro("");
       //   setLessonDuration("");
     } catch (err) {
-      toast.error("❌ Failed to create lesson");
+      toast.error("  Failed to create lesson");
       console.error(err);
     } finally {
       setLoading(false);

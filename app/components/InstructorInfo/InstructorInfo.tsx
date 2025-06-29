@@ -54,7 +54,7 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
           setAssistants(assistantData.assistants.items);
         }
       } catch (error) {
-        console.error("❌ Error fetching staff:", error);
+        console.error("  Error fetching staff:", error);
       }
     };
 

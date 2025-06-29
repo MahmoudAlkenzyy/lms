@@ -6,15 +6,15 @@ import { useForm, Controller } from "react-hook-form";
 import FileUploader from "@/app/components/FileUploader/FileUploader";
 import Textarea from "@/app/components/Textarea/Textarea";
 import CurriculumBar from "@/app/components/CurriculumBar/CurriculumBar";
-import { Backend_Url, Fake_Token } from "@/constants";
+import { Backend_Url, Fake_Token, Files_Url } from "@/constants";
 import { toast } from "react-toastify";
 
 export function LessonsClientPage() {
   const searchParams = useSearchParams();
   const courseId = searchParams.get("courseid");
   const lessonId = searchParams.get("lessonid");
-
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
 
   const {
     register,
@@ -25,12 +25,14 @@ export function LessonsClientPage() {
   } = useForm({
     defaultValues: {
       intro: "",
-      video: "",
-      videoPlaceholder: "",
+      video: null,
+      videoPlaceholder: null,
       description: "",
+      videoPreview: "",
+      videoPlaceholderPreview: "",
       itemImages: [
-        { image: "", altText: "", description: "" },
-        { image: "", altText: "", description: "" },
+        { image: null, description: "", previewUrl: "" },
+        { image: null, description: "", previewUrl: "" },
       ],
     },
   });
@@ -41,20 +43,36 @@ export function LessonsClientPage() {
         headers: { Authorization: Fake_Token },
       });
       const data = await res.json();
+
       if (data.lesson) {
+        console.log("Fetched lesson data:", data.lesson);
+
         reset({
           intro: data.lesson.intro ?? "",
-          video: data.lesson.video ?? "",
-          videoPlaceholder: data.lesson.videoPlaceholder ?? "",
+          video: null,
+          videoPreview: data.lesson.video ? `${Files_Url}${data.lesson.video}` : "",
+          videoPlaceholder: null,
+          videoPlaceholderPreview: data.lesson.videoPlaceholderPreview
+            ? `${Files_Url}${data.lesson.videoPlaceholder}`
+            : "",
           description: data.lesson.description ?? "",
-          itemImages: data.lesson.itemImages ?? [
-            { image: "", altText: "", description: "" },
-            { image: "", altText: "", description: "" },
+          itemImages: [
+            {
+              image: null,
+              description: data.lesson.itemImages?.[0]?.description ?? "",
+              previewUrl: data.lesson.itemImages?.[0]?.url ? `${Files_Url}${data.lesson.itemImages[0].url}` : "",
+            },
+            {
+              image: null,
+              description: data.lesson.itemImages?.[1]?.description ?? "",
+              previewUrl: data.lesson.itemImages?.[1]?.url ? `${Files_Url}${data.lesson.itemImages[1].url}` : "",
+            },
           ],
         });
       }
+      setActiveLessonId(lessonId);
     } catch (err) {
-      console.error("❌ Failed to fetch lesson data", err);
+      console.error(" Failed to fetch lesson data", err);
     }
   };
 
@@ -64,41 +82,49 @@ export function LessonsClientPage() {
 
   const onSubmit = async (formData: any) => {
     try {
-      const payload = {
-        lessonId,
-        intro: formData.intro,
-        video: formData.video,
-        videoPlaceholder: formData.videoPlaceholder,
-        description: formData.description,
-        itemImages: formData.itemImages.map((item: any) => ({
-          image: item.image,
-          altText: "",
-          description: item.description,
-        })),
-      };
+      const form = new FormData();
+
+      form.append("LessonId", lessonId || "");
+      form.append("Intro", formData.intro);
+      form.append("Description", formData.description);
+
+      if (formData.video instanceof File) {
+        form.append("Video", formData.video);
+      }
+
+      if (formData.videoPlaceholder instanceof File) {
+        form.append("VideoPlaceholder", formData.videoPlaceholder);
+      }
+
+      formData.itemImages.forEach((item: any, index: number) => {
+        if (item.image instanceof File) {
+          form.append(`itemImages[${index}].image`, item.image);
+        }
+        form.append(`itemImages[${index}].description`, item.description || "");
+        form.append(`itemImages[${index}].altText`, "");
+      });
 
       const res = await fetch(`${Backend_Url}/Lessons/CreateLessonItems`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: Fake_Token,
         },
-        body: JSON.stringify(payload),
+        body: form,
       });
 
-      if (!res.ok) throw new Error("❌ Failed to save lesson");
+      if (!res.ok) throw new Error("Upload failed");
 
-      toast.success("✅ Lesson saved successfully");
+      toast.success("Lesson saved successfully");
       setRefetchTrigger((n) => n + 1);
     } catch (err) {
       console.error(err);
-      toast.error("❌ Error saving lesson");
+      toast.error("Error saving lesson");
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-8">
-      <div className="py-2 px-4 sticky mt-3 -top-[16px] z-90 bg-black text-white flex flex-wrap items-center rounded-lg justify-between">
+      <div className="py-2 px-4 sticky mt-3 -top-[16px] z-90 bg-black text-white flex justify-between rounded-lg">
         <div>
           <h2 className="text-xl">Add Courses</h2>
           <p className="text-xs text-[#FFFFFFB0]">Let's check your update today.</p>
@@ -118,7 +144,7 @@ export function LessonsClientPage() {
             <>
               <Textarea {...register("intro")} id="intro" placeholder="Lesson intro" />
 
-              <div className="flex flex-col p-3 bg-white border shadow rounded-xl border-[#00000029] gap-3">
+              <div className="flex flex-col p-3 bg-white border shadow rounded-xl gap-3">
                 <Controller
                   control={control}
                   name="video"
@@ -127,12 +153,27 @@ export function LessonsClientPage() {
                       id="video"
                       type="video"
                       bg="/images/uploadImageBg.png"
-                      value={field.value}
-                      onChange={field.onChange}
+                      file={field.value}
+                      initialPreviewUrl={control._formValues.videoPreview} // ⬅️ updated prop name
+                      onFileChange={field.onChange}
                     />
                   )}
                 />
-                {/* <Textarea {...register("videoPlaceholder")} id="videoPlaceholder" placeholder="Video Placeholder" /> */}
+
+                <Controller
+                  control={control}
+                  name="videoPlaceholder"
+                  render={({ field }) => (
+                    <FileUploader
+                      id="videoPlaceholder"
+                      type="image"
+                      bg="/images/uploadImageBg.png"
+                      file={field.value}
+                      initialPreviewUrl={control._formValues.videoPlaceholderPreview}
+                    />
+                  )}
+                />
+
                 <Textarea {...register("description")} id="description" placeholder="Lesson description" />
               </div>
 
@@ -140,6 +181,7 @@ export function LessonsClientPage() {
                 {[0, 1].map((i) => (
                   <div className="flex flex-col w-full gap-2" key={i}>
                     <Controller
+                      key={i}
                       control={control}
                       name={`itemImages.${i}.image`}
                       render={({ field }) => (
@@ -147,8 +189,8 @@ export function LessonsClientPage() {
                           id={`itemImages${i}-image`}
                           type="image"
                           bg="/images/uploadImageBg.png"
-                          value={field.value}
-                          onChange={field.onChange}
+                          file={field.value}
+                          initialPreviewUrl={control._formValues.itemImages?.[i]?.previewUrl}
                         />
                       )}
                     />
@@ -173,6 +215,7 @@ export function LessonsClientPage() {
               currentLessonId={lessonId ?? ""}
               onLessonClick={(id) => fetchLessonData(id)}
               refetchTrigger={refetchTrigger}
+              activeLessonId={activeLessonId}
             />
           ) : (
             <p className="text-sm text-red-500">Course ID not found in URL.</p>

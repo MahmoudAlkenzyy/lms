@@ -53,11 +53,11 @@ export default function AddCoursePageClient() {
           setCourseId(data.course.id);
           setStep(data.course.status || "new");
         } else {
-          console.warn("❌ Course not found, starting fresh.");
+          console.warn("  Course not found, starting fresh.");
           setStep("new");
         }
       } catch (error) {
-        console.error("❌ Error loading course:", error);
+        console.error("  Error loading course:", error);
         setStep("new");
       }
     };
@@ -91,9 +91,9 @@ export default function AddCoursePageClient() {
             autoClose: 3000,
           });
         } catch (err) {
-          console.error("❌ Submission error:", err);
+          console.error("  Submission error:", err);
           toast.update(toastId, {
-            render: "❌ Error saving data",
+            render: "  Error saving data",
             type: "error",
             isLoading: false,
             autoClose: 3000,

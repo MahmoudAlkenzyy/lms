@@ -42,7 +42,7 @@ const AddSectionModal: React.FC<Props> = ({ isOpen, setIsOpen, id, refetch }) =>
       setIsOpen(false);
       refetch();
     } catch (err) {
-      toast.error("❌ Error adding section");
+      toast.error("  Error adding section");
       console.error(err);
     }
   };

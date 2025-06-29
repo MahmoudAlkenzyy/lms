@@ -22,11 +22,13 @@ export default function CurriculumBar({
   currentLessonId,
   onLessonClick,
   refetchTrigger,
+  activeLessonId,
 }: {
   courseId: string;
   currentLessonId: string;
   onLessonClick: (lessonId: string) => void;
   refetchTrigger: number;
+  activeLessonId: string | null;
 }) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [expandedChapterId, setExpandedChapterId] = useState<string | null>(null);
@@ -47,10 +49,10 @@ export default function CurriculumBar({
         if (data.isSuccess) {
           setChapters(data.chapters.items);
         } else {
-          console.error("❌ Error loading chapters:", data.errors);
+          console.error("  Error loading chapters:", data.errors);
         }
       } catch (error) {
-        console.error("❌ Fetch failed:", error);
+        console.error("  Fetch failed:", error);
       }
     };
 
@@ -100,7 +102,7 @@ export default function CurriculumBar({
                 >
                   <div className="flex flex-col gap-3 p-4 bg-white">
                     {chapter.lessons.map((lesson) => {
-                      const isActive = lesson.id === currentLessonId;
+                      const isActive = lesson.id === activeLessonId;
                       return (
                         <motion.div
                           key={lesson.id}

@@ -37,10 +37,10 @@ const CoursesTable = () => {
       if (data.isSuccess) {
         setCourses(data.courses.items);
       } else {
-        console.error("❌ API Error:", data.errors);
+        console.error("  API Error:", data.errors);
       }
     } catch (err) {
-      console.error("❌ Fetch error:", err);
+      console.error("  Fetch error:", err);
     } finally {
       setLoading(false);
     }
@@ -80,9 +80,9 @@ const CoursesTable = () => {
       fetchCourses();
       setIsModalOpen(false);
     } catch (err) {
-      console.error("❌ Delete failed", err);
+      console.error("  Delete failed", err);
       toast.update(toastId, {
-        render: "❌ Failed to delete course",
+        render: "  Failed to delete course",
         type: "error",
         isLoading: false,
         autoClose: 3000,

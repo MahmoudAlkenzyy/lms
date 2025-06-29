@@ -50,10 +50,10 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
       if (data.isSuccess && data.chapters?.items) {
         setChapters(data.chapters.items);
       } else {
-        console.warn("❌ No chapters found or unexpected response:", data);
+        console.warn("  No chapters found or unexpected response:", data);
       }
     } catch (err) {
-      console.error("❌ Error fetching chapters:", err);
+      console.error("  Error fetching chapters:", err);
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
       fetchChapters();
     } catch (err) {
       toast.dismiss();
-      toast.error("❌ Failed to delete section");
+      toast.error("  Failed to delete section");
     }
   };
 

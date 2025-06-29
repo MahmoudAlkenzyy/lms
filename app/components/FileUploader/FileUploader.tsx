@@ -1,69 +1,80 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { RxDividerVertical } from "react-icons/rx";
+import { Files_Url } from "../../../constants";
 
 interface FileUploaderProps {
   id: string;
   type: "image" | "video";
   bg: string;
   className?: string;
-  value?: string;
-  onChange?: (base64: string) => void;
+  initialPreviewUrl?: string; // ⬅️ renamed
+  file?: File | null;
+  onFileChange?: (file: File | null) => void;
 }
 
-export default function FileUploader({ id, type, bg, className, value, onChange }: FileUploaderProps) {
+export default function FileUploader({
+  id,
+  type,
+  bg,
+  file,
+  onFileChange,
+  className,
+  initialPreviewUrl,
+}: FileUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (file instanceof File) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      console.log("Created URL for file:", url);
+
+      return () => URL.revokeObjectURL(url);
+    } else if (initialPreviewUrl && initialPreviewUrl.trim() !== "") {
+      setPreviewUrl(initialPreviewUrl);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [file, initialPreviewUrl]);
 
   const handleClick = () => inputRef.current?.click();
 
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-    });
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const base64 = await toBase64(file);
-    onChange?.(base64);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] || null;
+    onFileChange?.(f);
   };
 
   const handleDelete = () => {
     if (inputRef.current) inputRef.current.value = "";
-    onChange?.("");
+    onFileChange?.(null);
   };
-
-  const acceptType = type === "image" ? "image/*" : "video/*";
 
   return (
     <div className={`flex flex-col p-3 pb-0 bg-white rounded-xl overflow-hidden ${className}`}>
-      <input id={id} type="file" ref={inputRef} onChange={handleFileChange} accept={acceptType} className="hidden" />
-
+      <input id={id} type="file" ref={inputRef} onChange={handleChange} accept={type + "/*"} className="hidden" />
       <div
-        onClick={!value ? handleClick : undefined}
+        onClick={!previewUrl ? handleClick : undefined}
         className="relative w-full h-64 rounded overflow-hidden flex items-center justify-center cursor-pointer"
       >
-        {!value ? (
+        {!previewUrl ? (
           <>
             <img src={bg} alt="background" className="absolute w-full h-full object-cover" />
             <Image fill src="/images/uploadLayer.svg" alt="overlay" className="z-10 bg-[#ffffffbc]" />
           </>
         ) : type === "image" ? (
-          <img src={value} alt="preview" className="object-contain w-full h-full" />
+          <img src={previewUrl} alt="preview" className="object-contain w-full h-full" />
         ) : (
-          <video controls src={value} className="object-contain w-full h-full" />
+          <video controls src={previewUrl} className="object-contain w-full h-full" />
         )}
       </div>
 
       <div className="h-[1px] bg-[#00000029] w-full mt-2"></div>
-
       <div className="self-end bg-[#7337FF36] flex border border-[#00000029] w-fit rounded-lg py-1 px-3 m-2">
         <button type="button" onClick={handleClick}>
           <FaRegEdit size={20} className="text-[#7337FF4e]" />

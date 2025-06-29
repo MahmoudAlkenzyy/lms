@@ -44,7 +44,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
           setError("Failed to load tags");
         }
       } catch (err) {
-        console.error("❌ Error fetching tags:", err);
+        console.error("  Error fetching tags:", err);
         setError("Network error");
       } finally {
         setLoading(false);
