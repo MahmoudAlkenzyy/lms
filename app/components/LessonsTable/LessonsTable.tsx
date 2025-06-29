@@ -7,6 +7,8 @@ import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Backend_Url, Fake_Token } from "@/constants";
 import { toast } from "react-toastify";
+import { CiTextAlignLeft } from "react-icons/ci";
+import { IoCheckmark } from "react-icons/io5";
 
 interface Lesson {
   id: string;
@@ -103,41 +105,70 @@ const LessonsTable = () => {
   }, [chapterId]);
 
   return (
-    <div className="flex flex-col gap-3 mt-5">
-      {loading ? (
-        <p>Loading lessons...</p>
-      ) : lessons.length === 0 ? (
-        <p className="text-sm text-gray-500">No lessons found for this section.</p>
-      ) : (
-        lessons.map((lesson) => (
-          <LessonRow
-            key={lesson.id}
-            type={lesson.type}
-            title={lesson.name}
-            duration={lesson.duration}
-            onEdit={() => router.push(`/lessons?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)}
-            onDelete={() => setLessonToDelete(lesson)}
-          />
-        ))
-      )}
+    <div className="">
+      <div className="py-2 px-4 sticky mt-3 -top-[16px] z-90 bg-black text-white flex flex-wrap items-center rounded-lg justify-start gap-6">
+        <CiTextAlignLeft />
+        <div className="">
+          <h2 className="text-xl">Add Courses</h2>
+          <p className="text-xs text-[#FFFFFFB0]">let's check your update today.</p>
+        </div>
+        <div className=" flex text-sm items-center gap-2 bg-[#FFFFFF14] rounded p-[2px]">
+          <IoCheckmark size={18} />
+          <p>Changes saved 2 min ago</p>
+        </div>
+        <div className="flex gap-4 items-center w-full justify-end ">
+          <button
+            type="button"
+            onClick={() => router.push(`/CoursePreview?courseid=${CourseId}&chapterid=${chapterId}`)}
+            className={`${
+              lessons.length == 0 && "!opacity-50 !cursor-not-allowed"
+            } px-6 py-1 text-sm text-gray-600 bg-white border border-gray-400 rounded hover:bg-gray-100 transition-colors duration-200 cursor-pointer`}
+            disabled={lessons.length == 0}
+          >
+            Preview
+          </button>
 
-      <AddLessonModal isOpen={isOpen} setIsOpen={setIsOpen} refetch={fetchLessons} />
+          <button className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors duration-200 cursor-pointer">
+            Save to draft
+          </button>
+        </div>
+      </div>
+      <div className="flex flex-col gap-3 mt-5">
+        {loading ? (
+          <p>Loading lessons...</p>
+        ) : lessons.length === 0 ? (
+          <p className="text-sm text-gray-500">No lessons found for this section.</p>
+        ) : (
+          lessons.map((lesson) => (
+            <LessonRow
+              key={lesson.id}
+              type={lesson.type}
+              title={lesson.name}
+              duration={lesson.duration}
+              onEdit={() => router.push(`/lessons?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)}
+              onDelete={() => setLessonToDelete(lesson)}
+            />
+          ))
+        )}
 
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-full border-[#7337FF] text-[#7337FF] border p-3 rounded cursor-pointer"
-      >
-        + Add New Lesson
-      </button>
+        <AddLessonModal isOpen={isOpen} setIsOpen={setIsOpen} refetch={fetchLessons} />
 
-      <ConfirmDeleteModal
-        isOpen={!!lessonToDelete}
-        onClose={() => setLessonToDelete(null)}
-        onConfirm={handleDeleteLesson}
-        title="Delete Lesson"
-        courseName={lessonToDelete?.name || ""}
-        message={`Are you sure you want to delete lesson "${lessonToDelete?.name}"? This action cannot be undone.`}
-      />
+        <button
+          onClick={() => setIsOpen(true)}
+          className="w-full border-[#7337FF] text-[#7337FF] border p-3 rounded cursor-pointer"
+        >
+          + Add New Lesson
+        </button>
+
+        <ConfirmDeleteModal
+          isOpen={!!lessonToDelete}
+          onClose={() => setLessonToDelete(null)}
+          onConfirm={handleDeleteLesson}
+          title="Delete Lesson"
+          courseName={lessonToDelete?.name || ""}
+          message={`Are you sure you want to delete lesson "${lessonToDelete?.name}"? This action cannot be undone.`}
+        />
+      </div>
     </div>
   );
 };
