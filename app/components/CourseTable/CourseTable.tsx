@@ -2,10 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaRegEye, FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaRegEye, FaEdit, FaTrashAlt, FaCalendarAlt } from "react-icons/fa";
 import { Backend_Url, Fake_Token } from "@/constants";
 import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
 import { toast } from "react-toastify";
+import DatePicker from "react-datepicker";
+import { parseISO, isAfter, isBefore, format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -17,6 +20,10 @@ const CoursesTable = () => {
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [selectedCourseName, setSelectedCourseName] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Date range picker state
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [startDate, endDate] = dateRange;
 
   const router = useRouter();
 
@@ -37,10 +44,10 @@ const CoursesTable = () => {
       if (data.isSuccess) {
         setCourses(data.courses.items);
       } else {
-        console.error("  API Error:", data.errors);
+        console.error("API Error:", data.errors);
       }
     } catch (err) {
-      console.error("  Fetch error:", err);
+      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
@@ -55,6 +62,7 @@ const CoursesTable = () => {
     setSelectedCourseName(name);
     setIsModalOpen(true);
   };
+
   const handleDelete = async () => {
     if (!selectedCourseId) return;
 
@@ -80,9 +88,9 @@ const CoursesTable = () => {
       fetchCourses();
       setIsModalOpen(false);
     } catch (err) {
-      console.error("  Delete failed", err);
+      console.error("Delete failed", err);
       toast.update(toastId, {
-        render: "  Failed to delete course",
+        render: "Failed to delete course",
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -90,14 +98,23 @@ const CoursesTable = () => {
     }
   };
 
-  const filteredCourses = courses.filter((course) => course.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearch = course.name?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const createdAt = course.createdAt ? parseISO(course.createdAt) : null;
+    const matchesDateRange =
+      (!startDate || (createdAt && isAfter(createdAt, startDate))) &&
+      (!endDate || (createdAt && isBefore(createdAt, endDate)));
+
+    return matchesSearch && matchesDateRange;
+  });
 
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = filteredCourses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
-    <div className="p-4 my-5 px-0 bg-white rounded-lg shadow-sm">
-      <div className="flex justify-between items-center mb-4 px-4">
+    <div className="p-4 my-5 px-0 bg-white rounded-lg shadow-sm overflow-hidden pe-8">
+      <div className="flex justify-between items-center flex-wrap gap-4 mb-4 px-4">
         <input
           type="text"
           placeholder="Search by Course Name"
@@ -106,8 +123,22 @@ const CoursesTable = () => {
             setSearchQuery(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-4 py-2 border border-gray-300 rounded-md w-1/3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="px-4 py-2 border border-gray-300 rounded-md w-72 focus:outline-none focus:ring-2 focus:ring-violet-500"
         />
+        <div className="hidden">
+          <DatePicker
+            selectsRange
+            startDate={startDate}
+            endDate={endDate}
+            onChange={(update: [Date | null, Date | null]) => {
+              setDateRange(update);
+              setCurrentPage(1);
+            }}
+            isClearable
+            calendarClassName="shadow-lg"
+            customInput={<CustomDateButton startDate={startDate} endDate={endDate} />}
+          />
+        </div>
       </div>
 
       <div className="overflow-auto">
@@ -133,7 +164,7 @@ const CoursesTable = () => {
                 <tr key={course.id} className="border-b text-center border-[#00000021] hover:bg-gray-50 transition">
                   <td className="px-4 py-2">{course.name}</td>
                   <td className="px-4 py-2">{course.id}</td>
-                  <td className="px-4 py-2">{course.instructors?.length > 0 ? course.instructors.join(", ") : "—"}</td>
+                  <td className="px-4 py-2">{course.instructors?.join(", ") || "—"}</td>
                   <td className="px-4 py-2">{course.duration || "—"}</td>
                   <td className="px-4 py-2">{course.level || "—"}</td>
                   <td className="px-4 py-2">
@@ -143,7 +174,10 @@ const CoursesTable = () => {
                   </td>
                   <td className="px-4 py-2 flex items-center justify-center gap-3 text-lg text-gray-500">
                     <div className="bg-[#7337FF1A] rounded flex gap-2 p-2">
-                      <button className="text-violet-600 cursor-pointer">
+                      <button
+                        onClick={() => router.push(`/CoursePreview?courseid=${course.id}`)}
+                        className="text-violet-600 cursor-pointer"
+                      >
                         <FaRegEye />
                       </button>
                       <button
@@ -167,7 +201,6 @@ const CoursesTable = () => {
         )}
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-end items-center gap-2 mt-4 me-5">
           {Array.from({ length: totalPages }).map((_, idx) => (
@@ -184,7 +217,6 @@ const CoursesTable = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -196,3 +228,32 @@ const CoursesTable = () => {
 };
 
 export default CoursesTable;
+const CustomDateButton = React.forwardRef(
+  (
+    {
+      value,
+      onClick,
+      startDate,
+      endDate,
+    }: {
+      value?: string;
+      onClick?: () => void;
+      startDate?: Date | null;
+      endDate?: Date | null;
+    },
+    ref: React.Ref<HTMLButtonElement>
+  ) => (
+    <button
+      type="button"
+      onClick={onClick}
+      ref={ref}
+      className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md bg-red-500 text-sm hover:bg-gray-100 focus:outline-none"
+    >
+      <FaCalendarAlt className="text-violet-600" />
+      {startDate && endDate
+        ? `${format(startDate, "dd/MM/yyyy")} - ${format(endDate, "dd/MM/yyyy")}`
+        : "Select Date Range"}
+    </button>
+  )
+);
+CustomDateButton.displayName = "CustomDateButton";

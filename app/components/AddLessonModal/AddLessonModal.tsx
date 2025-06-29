@@ -35,21 +35,19 @@ const AddLessonModal = ({
 
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("ChapterId", chapterId);
-    formData.append("Name", lessonTitle);
-    // formData.append("Intro", lessonIntro || "No intro");
-    formData.append("Order", "1");
-    formData.append("Type", lessonType);
-    // formData.append("Duration", lessonDuration);
-
     try {
       const res = await fetch(`${Backend_Url}/Lessons/CreateLesson`, {
         method: "POST",
         headers: {
           Authorization: Fake_Token,
+          "Content-Type": "application/json",
         },
-        body: formData,
+        body: JSON.stringify({
+          ChapterId: chapterId,
+          Name: lessonTitle,
+          order: "1",
+          Type: lessonType,
+        }),
       });
 
       if (!res.ok) throw new Error("Something went wrong");

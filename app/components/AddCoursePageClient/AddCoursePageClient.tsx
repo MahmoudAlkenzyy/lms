@@ -106,7 +106,7 @@ export default function AddCoursePageClient() {
   return (
     <div className="pb-8">
       {/* Sticky Header */}
-      <div className="py-2 px-4 sticky mt-3 -top-[16px] z-50 bg-black text-white flex flex-wrap items-center rounded-lg justify-start gap-6">
+      <div className="py-2 px-4 sticky  -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
         <CiTextAlignLeft />
         <div>
           <h2 className="text-xl">Add Courses</h2>

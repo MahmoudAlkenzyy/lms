@@ -24,7 +24,7 @@ const Sidebar = () => {
       animate={{ width: collapsed ? 80 : 250 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
     >
-      <motion.div className="h-full bg-black rounded-r-lg flex flex-col">
+      <motion.div className="h-full bg-black rounded-rb-lg flex flex-col">
         {/* Header with logo and toggle */}
         <div className="flex items-center justify-between p-4 border-b border-gray-800">
           <AnimatePresence>

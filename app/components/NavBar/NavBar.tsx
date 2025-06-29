@@ -9,19 +9,19 @@ const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
-    <div className="flex justify-between ">
-      <div className=" ">
-        <div className="relative w-full max-w-md ">
+    <div className="flex justify-between  bg-black text-white  py-3">
+      <div className="">
+        {/* <div className="relative w-full max-w-md ">
           <FaSearch className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400" />
           <input
             type="text"
             placeholder="search..."
             className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
-        </div>
+        </div> */}
       </div>
       <div className="flex gap-4 items-center pe-4">
-        <p className="p-2 bg-[#C1BBE966] text-[#C1BBE9] w-8 h-8 rounded flex justify-center items-center">
+        <p className="p-2 bg-[#7337FFA1] text-[#C1BBE9] w-8 h-8 rounded flex justify-center items-center">
           <FaRegBell />
         </p>
         <Image
@@ -32,8 +32,8 @@ const NavBar = () => {
           width={70}
         />
         <div className="">
-          <p className="text-[#151D48]">name</p>
-          <p className="font-light text-[#737791] text-sm">role</p>
+          <p className="">name</p>
+          <p className="font-light text-[#FFFFFF8A] text-sm">role</p>
         </div>
       </div>
       <AnimatePresence>
