@@ -17,3 +17,8 @@
 .btn:hover {
   color: #7337ff;
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

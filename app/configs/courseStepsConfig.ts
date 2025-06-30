@@ -30,9 +30,9 @@ export const createStepConfigs = (
       onSubmit: async (data, { setStep, setCourseId, Backend_Url, Fake_Token }) => {
         const formData = new FormData();
         formData.append("Name", data.Name);
-        formData.append("Description", data.Description);
-        formData.append("Outcome", data.Outcome);
-        formData.append("Prerequisites", data.Prerequisites);
+        formData.append("Description", data.Description ?? "");
+        formData.append("Outcome", data.Outcome ?? "");
+        formData.append("Prerequisites", data.Prerequisites ?? "");
         if (data.CoverImage instanceof File) {
           formData.append("CoverImage", data.CoverImage);
         }

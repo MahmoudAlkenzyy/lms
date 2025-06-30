@@ -1,13 +1,23 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useFormContext } from "react-hook-form";
 
 const CourseCodeInput = ({ disabled }: { disabled: boolean }) => {
   const {
     register,
+    watch,
+    clearErrors,
     formState: { errors },
   } = useFormContext();
+
+  const code = watch("code");
+
+  useEffect(() => {
+    if (code?.trim()) {
+      clearErrors("code");
+    }
+  }, [code, clearErrors]);
 
   return (
     <motion.div
@@ -28,10 +38,9 @@ const CourseCodeInput = ({ disabled }: { disabled: boolean }) => {
           required: "Course code is required",
         })}
         placeholder="Enter your course code"
-        className={
-          "w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition" +
-          (disabled ? " opacity-50 cursor-not-allowed" : "")
-        }
+        className={`w-full px-4 py-2 border rounded-md shadow-sm transition focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 ${
+          disabled ? "opacity-50 cursor-not-allowed" : "border-gray-300"
+        }`}
       />
 
       {errors.code && <span className="text-red-500 text-sm">{errors.code.message as string}</span>}

@@ -115,11 +115,11 @@ export function LessonsClientPage() {
 
       if (!res.ok) throw new Error("Upload failed");
 
-      toast.success("✅ Lesson created successfully");
+      toast.success(" Lesson created successfully");
       setRefetchTrigger((n) => n + 1);
     } catch (err) {
-      console.error("❌ Error", err);
-      toast.error("❌ Error creating lesson");
+      console.error(" Error", err);
+      toast.error(" Error creating lesson");
     }
   };
 

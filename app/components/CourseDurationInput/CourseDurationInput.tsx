@@ -9,29 +9,34 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
     setValue,
     clearErrors,
     control,
+    watch,
     formState: { errors },
   } = useFormContext();
 
-  // Watch allowDynamicDuration field value from the form
   const watchedAllowDynamic = useWatch({ control, name: "allowDynamicDuration" });
+  const watchedDuration = watch("duration");
 
   const [isAutoDuration, setIsAutoDuration] = useState(false);
 
-  // Sync internal toggle with form value
   useEffect(() => {
     if (watchedAllowDynamic !== undefined) {
       setIsAutoDuration(Boolean(watchedAllowDynamic));
     }
   }, [watchedAllowDynamic]);
 
-  // Update the form value when toggling the switch
   useEffect(() => {
     setValue("allowDynamicDuration", isAutoDuration, { shouldValidate: true });
     if (isAutoDuration) {
-      setValue("duration", undefined); // Clear duration if auto mode is ON
+      setValue("duration", undefined);
       clearErrors("duration");
     }
   }, [isAutoDuration, setValue, clearErrors]);
+
+  useEffect(() => {
+    if (watchedDuration && watchedDuration >= 0) {
+      clearErrors("duration");
+    }
+  }, [watchedDuration, clearErrors]);
 
   const handleToggle = () => {
     setIsAutoDuration((prev) => !prev);
@@ -48,7 +53,6 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
         Course Duration
       </label>
 
-      {/* Hidden form field */}
       <input type="hidden" {...register("allowDynamicDuration")} />
 
       <div className="relative">
@@ -56,6 +60,7 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
           type="number"
           id="duration"
           min={0}
+          step="1"
           placeholder="Enter duration"
           disabled={isAutoDuration || disabled}
           {...register("duration", {
@@ -66,9 +71,11 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
             },
             valueAsNumber: true,
           })}
-          className={`w-full pr-14 px-4 py-2 border border-gray-300 rounded-md shadow-sm transition focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 ${
-            isAutoDuration ? "bg-gray-100 cursor-not-allowed" : ""
-          } ${disabled ? "opacity-50 cursor-not-allowed" : ""} no-spinner`}
+          className={`w-full pr-14 px-4 py-2 border border-gray-300 rounded-md shadow-sm transition focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 
+            ${isAutoDuration ? "bg-gray-100 cursor-not-allowed" : ""}
+            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+            hide-spinner
+          `}
         />
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none text-sm">min</span>
       </div>
@@ -83,7 +90,7 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
           onClick={handleToggle}
           className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${
             isAutoDuration ? "bg-violet-600" : "bg-gray-300"
-          }${disabled ? " opacity-50 cursor-not-allowed" : ""}`}
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           <span
             className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 ${

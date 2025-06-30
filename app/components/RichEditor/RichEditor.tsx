@@ -28,8 +28,7 @@ export const RichEditor: React.FC<RichEditorProps> = ({
   const minHeight = `${rows * 24}px`;
   const { register, setValue, getValues, watch } = useFormContext();
 
-  // Get current value from form context
-  const currentValue = watch(name) || getValues(name) || "";
+  const currentValue = watch(name) ?? getValues(name) ?? "";
 
   const editor = useEditor({
     extensions: [
@@ -40,16 +39,15 @@ export const RichEditor: React.FC<RichEditorProps> = ({
     content: currentValue,
     editable: !disabled,
     onUpdate: ({ editor }) => {
-      setValue(name, editor.getHTML(), { shouldValidate: true });
+      const content = editor.getHTML() ?? "";
+      setValue(name, content, { shouldValidate: true });
     },
   });
 
-  // Register field manually
   useEffect(() => {
     register(name);
   }, [register, name]);
 
-  // Watch for external changes (like form reset) and update content
   useEffect(() => {
     if (editor && currentValue !== editor.getHTML()) {
       editor.commands.setContent(currentValue || "");

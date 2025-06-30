@@ -83,12 +83,12 @@ export default function CurriculumBar({
               onClick={() => toggleChapter(chapter.id)}
               className="cursor-pointer px-4 py-3 flex justify-between items-center overflow-hidden hover:bg-gray-200 transition-colors"
             >
-              <h3 className="font-medium text-gray-700">{chapter.name}</h3>
               {expandedChapterId === chapter.id ? (
-                <FaChevronUp className="text-gray-600" />
+                <FaChevronUp size={20} className="text-gray-600" />
               ) : (
-                <FaChevronDown className="text-gray-600" />
+                <FaChevronDown size={20} className="text-gray-600" />
               )}
+              <h3 className="font-medium text-gray-700 ms-3 text-wrap">{chapter.name}</h3>
             </div>
 
             <AnimatePresence initial={false}>

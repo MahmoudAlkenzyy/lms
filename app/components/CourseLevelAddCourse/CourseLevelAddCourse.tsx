@@ -14,11 +14,23 @@ const CourseLevelAddCourse = ({ disabled }: { disabled: boolean }) => {
   const {
     register,
     formState: { errors },
+    clearErrors,
+    setValue,
+    watch,
   } = useFormContext();
 
   const [levels, setLevels] = useState<Level[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const selectedLevelId = watch("levelId");
+
+  // Auto-clear error when valid level is selected
+  useEffect(() => {
+    if (selectedLevelId) {
+      clearErrors("levelId");
+    }
+  }, [selectedLevelId, clearErrors]);
 
   useEffect(() => {
     const fetchLevels = async () => {
@@ -43,6 +55,12 @@ const CourseLevelAddCourse = ({ disabled }: { disabled: boolean }) => {
     };
     fetchLevels();
   }, []);
+
+  useEffect(() => {
+    register("levelId", {
+      required: "Course level is required",
+    });
+  }, [register]);
 
   return (
     <motion.div
@@ -77,7 +95,7 @@ const CourseLevelAddCourse = ({ disabled }: { disabled: boolean }) => {
             ))}
           </select>
 
-          {errors.courseLevel && <span className="text-red-500 text-sm">{errors.courseLevel.message as string}</span>}
+          {errors.levelId && <span className="text-red-500 text-sm">{errors.levelId.message as string}</span>}
         </>
       )}
     </motion.div>

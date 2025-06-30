@@ -10,111 +10,152 @@ interface Person {
 }
 
 const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
-  const { register, setValue, watch } = useFormContext();
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext();
 
   const [instructors, setInstructors] = useState<Person[]>([]);
   const [assistants, setAssistants] = useState<Person[]>([]);
 
+  const [instructorQuery, setInstructorQuery] = useState("");
+  const [assistantQuery, setAssistantQuery] = useState("");
+
+  const [showInstructorList, setShowInstructorList] = useState(false);
+  const [showAssistantList, setShowAssistantList] = useState(false);
+
   const isRatingEnabled = watch("allowRatingOnInstructor") || false;
 
   useEffect(() => {
-    register("instructorIds");
+    register("instructorIds", { required: "Instructor is required" });
     register("assistantIds");
     register("allowRatingOnInstructor");
-    // register("instructorImage");
 
     const fetchPeople = async () => {
-      try {
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: Fake_Token,
-        };
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: Fake_Token,
+      };
 
-        const [instructorRes, assistantRes] = await Promise.all([
-          fetch(`${Backend_Url}/Instructors/GetInstructors`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({}),
-          }),
-          fetch(`${Backend_Url}/Assistants/GetAssistants`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({}),
-          }),
-        ]);
+      const [instructorRes, assistantRes] = await Promise.all([
+        fetch(`${Backend_Url}/Instructors/GetInstructors`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({}),
+        }),
+        fetch(`${Backend_Url}/Assistants/GetAssistants`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({}),
+        }),
+      ]);
 
-        const instructorData = await instructorRes.json();
-        const assistantData = await assistantRes.json();
+      const instructorData = await instructorRes.json();
+      const assistantData = await assistantRes.json();
 
-        if (instructorData?.instructors?.items) {
-          setInstructors(instructorData.instructors.items);
-        }
-
-        if (assistantData?.assistants?.items) {
-          setAssistants(assistantData.assistants.items);
-        }
-      } catch (error) {
-        console.error("  Error fetching staff:", error);
-      }
+      setInstructors(instructorData?.instructors?.items || []);
+      setAssistants(assistantData?.assistants?.items || []);
     };
 
     fetchPeople();
   }, [register]);
 
-  return (
-    <div className="space-y-6 w-full bg-white rounded p-5 pt-3 ps-3">
-      <p className="text-[#000000D9] font-semibold">Instructor</p>
+  const filteredInstructors = instructors.filter((p) => p.name.toLowerCase().includes(instructorQuery.toLowerCase()));
+  const filteredAssistants = assistants.filter((p) => p.name.toLowerCase().includes(assistantQuery.toLowerCase()));
 
-      <div className="flex gap-5 items-center justify-start">
-        {/* Instructor Dropdown */}
-        <div className="flex flex-col gap-2 border border-[#0000001A] rounded p-2 w-full">
-          <label htmlFor="instructorSelect">Select Instructor</label>
-          <select
-            id="instructorSelect"
+  return (
+    <div className="space-y-6 w-full bg-white rounded-lg p-6 shadow">
+      <h2 className="text-lg font-semibold text-gray-800">Instructor Info</h2>
+
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Instructor Autocomplete */}
+        <div className="relative w-full">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Instructor *</label>
+          <input
+            type="text"
             disabled={disabled}
-            className={
-              "px-4 py-2 border border-gray-300 rounded shadow-sm" + (disabled ? " opacity-50 cursor-not-allowed" : "")
-            }
-            onChange={(e) => setValue("instructorIds", [e.target.value], { shouldValidate: true })}
-          >
-            <option value="">Choose instructor</option>
-            {instructors.map((instructor) => (
-              <option key={instructor.id} value={instructor.id}>
-                {instructor.name}
-              </option>
-            ))}
-          </select>
+            value={instructorQuery}
+            onChange={(e) => {
+              setInstructorQuery(e.target.value);
+              setShowInstructorList(true);
+            }}
+            placeholder="Type to search instructor"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          />
+          {showInstructorList && instructorQuery && (
+            <ul className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-y-auto">
+              {filteredInstructors.length === 0 ? (
+                <li className="px-4 py-2 text-sm text-red-500">No results found</li>
+              ) : (
+                filteredInstructors.map((i) => (
+                  <li
+                    key={i.id}
+                    onClick={() => {
+                      setInstructorQuery(i.name);
+                      setValue("instructorIds", [i.id], { shouldValidate: true });
+                      setShowInstructorList(false);
+                    }}
+                    className="px-4 py-2 text-sm hover:bg-violet-100 cursor-pointer"
+                  >
+                    {i.name}
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
+          {errors.instructorIds && (
+            <p className="text-sm text-red-500 mt-1">{errors.instructorIds.message as string}</p>
+          )}
         </div>
 
-        {/* Assistant Dropdown */}
-        <div className="flex flex-col gap-2 border border-[#0000001A] rounded p-2 w-full">
-          <label htmlFor="assistantSelect">Select Assistant (optional)</label>
-          <select
-            id="assistantSelect"
+        {/* Assistant Autocomplete */}
+        <div className="relative w-full">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Assistant (optional)</label>
+          <input
+            type="text"
             disabled={disabled}
-            className={
-              "px-4 py-2 border border-gray-300 rounded shadow-sm" + (disabled ? " opacity-50 cursor-not-allowed" : "")
-            }
-            onChange={(e) => setValue("assistantIds", [e.target.value], { shouldValidate: true })}
-          >
-            <option value="">Choose assistant</option>
-            {assistants.map((assistant) => (
-              <option key={assistant.id} value={assistant.id}>
-                {assistant.name}
-              </option>
-            ))}
-          </select>
+            value={assistantQuery}
+            onChange={(e) => {
+              setAssistantQuery(e.target.value);
+              setShowAssistantList(true);
+            }}
+            placeholder="Type to search assistant"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          />
+          {showAssistantList && assistantQuery && (
+            <ul className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-y-auto">
+              {filteredAssistants.length === 0 ? (
+                <li className="px-4 py-2 text-sm text-red-500">No results found</li>
+              ) : (
+                filteredAssistants.map((a) => (
+                  <li
+                    key={a.id}
+                    onClick={() => {
+                      setAssistantQuery(a.name);
+                      setValue("assistantIds", [a.id]);
+                      setShowAssistantList(false);
+                    }}
+                    className="px-4 py-2 text-sm hover:bg-violet-100 cursor-pointer"
+                  >
+                    {a.name}
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
         </div>
       </div>
 
-      <div className="mt-6 space-y-2 w-[48%]">
-        <label className="text-sm font-medium text-gray-700 block">Rating Instructor</label>
-
+      {/* Rating Toggle */}
+      <div className="mt-6 space-y-2">
+        <label className="text-sm font-medium text-gray-700">Rating Instructor</label>
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-600">Allow Rating on instructor’s performance</p>
+          <span className="text-sm text-gray-600">Allow rating on performance</span>
           <button
             type="button"
-            disabled={false}
+            disabled={disabled}
             onClick={() => setValue("allowRatingOnInstructor", !isRatingEnabled)}
             className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${
               isRatingEnabled ? "bg-violet-600" : "bg-gray-300"
