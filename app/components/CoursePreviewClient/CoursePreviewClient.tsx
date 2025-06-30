@@ -49,14 +49,18 @@ export function LessonsPreviewPageClient() {
             >
               {/* <h2 className="text-2xl font-semibold text-[#111827]">{lessonData.name}</h2> */}
 
-              <p className="text-gray-700 whitespace-pre-line  bg-white p-6 rounded-xl shadow-md">{lessonData.intro}</p>
+              {lessonData.intro && (
+                <p className="text-gray-700 whitespace-pre-line  bg-white p-6 rounded-xl shadow-md">
+                  {lessonData.intro}
+                </p>
+              )}
 
               <div className=" bg-white p-6 rounded-xl shadow-md">
                 {lessonData.video && (
                   <motion.video
                     key="video"
                     src={`${Files_Url}${lessonData.video}`}
-                    poster={`${Files_Url}${lessonData.videoPlaceholder}`}
+                    poster={lessonData.videoPlaceholder ? `${Files_Url}${lessonData.videoPlaceholder}` : undefined}
                     controls
                     className="w-full rounded-lg shadow-lg"
                     initial={{ opacity: 0 }}

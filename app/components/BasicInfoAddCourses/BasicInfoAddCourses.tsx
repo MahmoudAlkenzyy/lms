@@ -48,7 +48,11 @@ const BasicInfoAddCourses = ({ disabled }: { disabled: boolean }) => {
       </div>
 
       <div className="flex flex-col gap-2 mt-5">
+        <label htmlFor="Name" className="text-sm font-medium text-gray-700 mb-2 block">
+          Course Name
+        </label>
         <input
+          id="Name"
           type="text"
           disabled={disabled}
           {...register("Name", { required: "Course name is required" })}

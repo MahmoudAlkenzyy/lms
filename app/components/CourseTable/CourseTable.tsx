@@ -113,7 +113,7 @@ const CoursesTable = () => {
   const paginatedCourses = filteredCourses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
-    <div className="p-4 my-5 px-0 bg-white rounded-lg shadow-sm overflow-hidden pe-8">
+    <div className="p-4 px-0 bg-white mt-3 rounded-lg shadow-sm overflow-hidden pe-8">
       <div className="flex justify-between items-center flex-wrap gap-4 mb-4 px-4">
         <input
           type="text"
@@ -148,11 +148,12 @@ const CoursesTable = () => {
           <div className="text-center text-gray-500 py-10">No courses found.</div>
         ) : (
           <table className="w-full text-sm text-left text-gray-700">
-            <thead className="text-xs uppercase text-center text-gray-500">
+            <thead className="text-xs capitalize text-center text-gray-500">
               <tr>
                 <th className="px-4 py-2">Course Name</th>
                 <th className="px-4 py-2">ID</th>
                 <th className="px-4 py-2">Instructor</th>
+                <th className="px-4 py-2">Lessons</th>
                 <th className="px-4 py-2">Duration</th>
                 <th className="px-4 py-2">Level</th>
                 <th className="px-4 py-2">Status</th>
@@ -165,6 +166,7 @@ const CoursesTable = () => {
                   <td className="px-4 py-2">{course.name}</td>
                   <td className="px-4 py-2">{course.id}</td>
                   <td className="px-4 py-2">{course.instructors?.join(", ") || "—"}</td>
+                  <td className="px-4 py-2">{course.lessonsCount || 0}</td>
                   <td className="px-4 py-2">{course.duration || "—"}</td>
                   <td className="px-4 py-2">{course.level || "—"}</td>
                   <td className="px-4 py-2">

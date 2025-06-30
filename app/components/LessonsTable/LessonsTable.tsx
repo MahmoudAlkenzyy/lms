@@ -106,7 +106,7 @@ const LessonsTable = () => {
 
   return (
     <div className="">
-      <div className="py-2 px-4 sticky mt-3 -top-[16px] z-90 bg-black text-white flex flex-wrap items-center rounded-lg justify-start gap-6">
+      <div className="py-2 px-4 sticky pb-3  -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
         <CiTextAlignLeft />
         <div className="">
           <h2 className="text-xl">Add Courses</h2>
@@ -116,7 +116,7 @@ const LessonsTable = () => {
           <IoCheckmark size={18} />
           <p>Changes saved 2 min ago</p>
         </div>
-        <div className="flex gap-4 items-center w-full justify-end ">
+        <div className="flex gap-4 items-center ms-auto  justify-end ">
           <button
             type="button"
             onClick={() => router.push(`/CoursePreview?courseid=${CourseId}&chapterid=${chapterId}`)}
@@ -133,7 +133,7 @@ const LessonsTable = () => {
           </button>
         </div>
       </div>
-      <div className="flex flex-col gap-3 mt-5">
+      <div className="flex flex-col gap-3 mt-5 mx-3 mb-3">
         {loading ? (
           <p>Loading lessons...</p>
         ) : lessons.length === 0 ? (

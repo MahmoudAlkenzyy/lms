@@ -7,9 +7,9 @@ export default function Page() {
   const router = useRouter();
 
   return (
-    <div>
+    <div className="mx-3">
       <h2 className="text-2xl mt-3 font-medium">Courses</h2>
-      <div className="flex items-center justify-between gap-7">
+      <div className="flex items-center justify-between gap-7  ">
         <p className="text-[#00000087] text-sm">Let’s check your update today.</p>
         <button
           onClick={() => router.push("/Course")}

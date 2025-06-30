@@ -68,7 +68,7 @@ const ProgramSelector = ({ disabled }: { disabled: boolean }) => {
       className="bg-white rounded shadow p-6 pt-3 ps-3 space-y-3"
     >
       <label htmlFor="programId" className="text-sm font-medium text-gray-700 block">
-        Program
+        Add to program
       </label>
 
       {loading ? (

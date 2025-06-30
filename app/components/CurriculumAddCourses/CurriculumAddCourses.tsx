@@ -30,6 +30,31 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(false);
   const [chapterToDelete, setChapterToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [lessonToDelete, setLessonToDelete] = useState<{ id: string; name: string } | null>(null);
+
+  const handleDeleteLesson = async () => {
+    if (!lessonToDelete) return;
+    toast.loading("Deleting lesson...");
+    try {
+      const res = await fetch(`${Backend_Url}/Lessons/DeleteLesson?Id=${lessonToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "text/plain",
+          Authorization: Fake_Token,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed");
+
+      toast.dismiss();
+      toast.success("Lesson deleted successfully");
+      setLessonToDelete(null);
+      fetchChapters();
+    } catch (err) {
+      toast.dismiss();
+      toast.error("❌ Failed to delete lesson");
+    }
+  };
   const router = useRouter();
 
   const fetchChapters = useCallback(async () => {
@@ -114,6 +139,10 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
             disabled={disabled}
             onEdit={() => router.push(`/Sections?courseid=${id}&chapterid=${chapter.id}`)}
             onDelete={() => setChapterToDelete({ id: chapter.id, name: chapter.name })}
+            onEditLesson={(lessonid) =>
+              router.push(`/lessons?courseid=${id}&chapterid=${chapter.id}&lessonid=${lessonid}`)
+            }
+            onDeleteLesson={(lessonId, lessonName) => setLessonToDelete({ id: lessonId, name: lessonName })}
           />
         ))}
 
@@ -127,6 +156,14 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
         title="Delete Section"
         courseName={chapterToDelete?.name || ""}
         message={`Are you sure you want to delete section "${chapterToDelete?.name}"? This action cannot be undone.`}
+      />
+      <ConfirmDeleteModal
+        isOpen={!!lessonToDelete}
+        onClose={() => setLessonToDelete(null)}
+        onConfirm={handleDeleteLesson}
+        title="Delete Lesson"
+        courseName={lessonToDelete?.name || ""}
+        message={`Are you sure you want to delete lesson "${lessonToDelete?.name}"? This action cannot be undone.`}
       />
     </div>
   );

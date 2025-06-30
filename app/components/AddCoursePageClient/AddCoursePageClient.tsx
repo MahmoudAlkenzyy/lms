@@ -105,8 +105,7 @@ export default function AddCoursePageClient() {
 
   return (
     <div className="pb-8">
-      {/* Sticky Header */}
-      <div className="py-2 px-4 sticky  -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
+      <div className="py-2 px-4 sticky pb-3  -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
         <CiTextAlignLeft />
         <div>
           <h2 className="text-xl">Add Courses</h2>
@@ -116,18 +115,17 @@ export default function AddCoursePageClient() {
           <IoCheckmark size={18} />
           <p>Changes saved 2 min ago</p>
         </div>
-        <div className="flex gap-4 items-center w-full justify-end">
-          <button
-            type="button"
-            onClick={handleAllSubmits}
-            className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors"
-          >
-            Save to draft
-          </button>
-        </div>
+
+        <button
+          type="button"
+          onClick={handleAllSubmits}
+          className="px-6 py-1 ms-auto text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors"
+        >
+          Save to draft
+        </button>
       </div>
 
-      <div className="flex mt-4 gap-7">
+      <div className="flex mt-4 mx-2 gap-7 ">
         <div className="flex-col flex gap-7 w-2/3">
           <FormProvider {...basicInfoForm}>
             <form>
@@ -148,7 +146,7 @@ export default function AddCoursePageClient() {
           </FormProvider>
         </div>
 
-        <div className="w-1/3 gap-7 flex flex-col">
+        <div className="w-1/3 gap-7 flex flex-col ">
           <FormProvider {...sidePanelForm}>
             <form className="flex flex-col gap-7">
               <CourseCategoryAddCourses disabled={step !== "Draft-BasicInfo"} />

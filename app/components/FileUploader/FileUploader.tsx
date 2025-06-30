@@ -33,13 +33,10 @@ export default function FileUploader({
     if (file instanceof File) {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
-      console.log("Created URL for file:", url);
-
       return () => URL.revokeObjectURL(url);
-    } else if (initialPreviewUrl && initialPreviewUrl.trim() !== "") {
-      setPreviewUrl(initialPreviewUrl);
     } else {
-      setPreviewUrl(null);
+      // fallback to initialPreviewUrl even if file = null
+      setPreviewUrl(initialPreviewUrl || null);
     }
   }, [file, initialPreviewUrl]);
 
@@ -47,7 +44,11 @@ export default function FileUploader({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] || null;
-    onFileChange?.(f);
+    if (f) {
+      const url = URL.createObjectURL(f);
+      setPreviewUrl(url);
+      onFileChange?.(f);
+    }
   };
 
   const handleDelete = () => {
@@ -70,12 +71,16 @@ export default function FileUploader({
         ) : type === "image" ? (
           <img src={previewUrl} alt="preview" className="object-contain w-full h-full" />
         ) : (
-          <video controls src={previewUrl} className="object-contain w-full h-full" />
+          <video
+            controls
+            src={previewUrl}
+            className="object-contain w-full h-full rounded-lg shadow-md border border-gray-200"
+          />
         )}
       </div>
 
       <div className="h-[1px] bg-[#00000029] w-full mt-2"></div>
-      <div className="self-end bg-[#7337FF36] flex border border-[#00000029] w-fit rounded-lg py-1 px-3 m-2">
+      {/* <div className="self-end bg-[#7337FF36] flex border border-[#00000029] w-fit rounded-lg py-1 px-3 m-2">
         <button type="button" onClick={handleClick}>
           <FaRegEdit size={20} className="text-[#7337FF4e]" />
         </button>
@@ -83,7 +88,7 @@ export default function FileUploader({
         <button type="button" onClick={handleDelete}>
           <RiDeleteBinLine size={20} className="text-[#EF3826]" />
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

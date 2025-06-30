@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaChevronDown, FaChevronUp, FaTrashAlt, FaEdit } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaTrashAlt, FaEdit, FaRegEdit } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Lesson {
@@ -21,9 +21,11 @@ interface Props {
   disabled?: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onEditLesson: (id: string) => void;
+  onDeleteLesson: (lessonId: string, lessonName: string) => void;
 }
 
-const Accordion: React.FC<Props> = ({ chapter, disabled, onEdit, onDelete }) => {
+const Accordion: React.FC<Props> = ({ chapter, disabled, onEdit, onDelete, onDeleteLesson, onEditLesson }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -81,12 +83,20 @@ const Accordion: React.FC<Props> = ({ chapter, disabled, onEdit, onDelete }) => 
                   <div className="text-sm">
                     {lesson.name} <span className="text-gray-500 text-xs">({lesson.lessonType})</span>
                   </div>
-                  <div className="flex gap-2">
-                    <button disabled={disabled} onClick={() => alert("Edit lesson")}>
-                      <FaEdit size={13} className="text-blue-400" />
+                  <div className="flex gap-2 bg-[#ECE3FF] px-2 py-1 rounded">
+                    <button
+                      type="button"
+                      onClick={() => onEditLesson(lesson.id)}
+                      className="text-violet-600 cursor-pointer"
+                    >
+                      <FaEdit size={16} className="text-blue-500" />
                     </button>
-                    <button disabled={disabled} onClick={() => confirm("Delete this lesson?") && alert("Deleted")}>
-                      <FaTrashAlt size={13} className="text-red-400" />
+                    <button
+                      type="button"
+                      onClick={() => onDeleteLesson(lesson.id, lesson.name)}
+                      className="text-red-500 cursor-pointer"
+                    >
+                      <FaTrashAlt size={16} className="text-red-500" />
                     </button>
                   </div>
                 </div>

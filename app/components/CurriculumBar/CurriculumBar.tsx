@@ -64,7 +64,7 @@ export default function CurriculumBar({
   };
 
   return (
-    <div className="flex flex-col gap-4 p-5 bg-white border shadow-lg rounded-xl border-[#E5E7EB] min-h-screen">
+    <div className="flex flex-col gap-4 p-5 bg-white border shadow-lg rounded-xl border-[#E5E7EB] min-h-screen ">
       <h2 className="font-bold text-xl text-gray-800 mb-2">Curriculum</h2>
       <div className="w-full border-b border-gray-200 mb-2" />
 
@@ -81,7 +81,7 @@ export default function CurriculumBar({
           >
             <div
               onClick={() => toggleChapter(chapter.id)}
-              className="cursor-pointer px-4 py-3 flex justify-between items-center hover:bg-gray-200 transition-colors"
+              className="cursor-pointer px-4 py-3 flex justify-between items-center overflow-hidden hover:bg-gray-200 transition-colors"
             >
               <h3 className="font-medium text-gray-700">{chapter.name}</h3>
               {expandedChapterId === chapter.id ? (

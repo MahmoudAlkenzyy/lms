@@ -13,6 +13,7 @@ export function LessonsClientPage() {
   const searchParams = useSearchParams();
   const courseId = searchParams.get("courseid");
   const lessonId = searchParams.get("lessonid");
+
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
 
@@ -21,6 +22,7 @@ export function LessonsClientPage() {
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
@@ -37,24 +39,20 @@ export function LessonsClientPage() {
     },
   });
 
-  const fetchLessonData = async (lessonId: string) => {
+  const fetchLessonData = async (id: string) => {
     try {
-      const res = await fetch(`${Backend_Url}/Lessons/GetLesson?LessonId=${lessonId}`, {
+      const res = await fetch(`${Backend_Url}/Lessons/GetLesson?LessonId=${id}`, {
         headers: { Authorization: Fake_Token },
       });
       const data = await res.json();
 
       if (data.lesson) {
-        console.log("Fetched lesson data:", data.lesson);
-
         reset({
           intro: data.lesson.intro ?? "",
           video: null,
           videoPreview: data.lesson.video ? `${Files_Url}${data.lesson.video}` : "",
           videoPlaceholder: null,
-          videoPlaceholderPreview: data.lesson.videoPlaceholderPreview
-            ? `${Files_Url}${data.lesson.videoPlaceholder}`
-            : "",
+          videoPlaceholderPreview: data.lesson.videoPlaceholder ? `${Files_Url}${data.lesson.videoPlaceholder}` : "",
           description: data.lesson.description ?? "",
           itemImages: [
             {
@@ -69,24 +67,27 @@ export function LessonsClientPage() {
             },
           ],
         });
+        setActiveLessonId(id);
       }
-      setActiveLessonId(lessonId);
     } catch (err) {
-      console.error(" Failed to fetch lesson data", err);
+      console.error("Failed to fetch lesson data", err);
     }
   };
 
   useEffect(() => {
     if (lessonId) fetchLessonData(lessonId);
   }, [lessonId]);
-
   const onSubmit = async (formData: any) => {
     try {
       const form = new FormData();
 
       form.append("LessonId", lessonId || "");
+      form.append("Name", formData.name);
       form.append("Intro", formData.intro);
+      form.append("Order", String(formData.order));
+      form.append("Type", String(formData.type));
       form.append("Description", formData.description);
+      form.append("Duration", formData.duration);
 
       if (formData.video instanceof File) {
         form.append("Video", formData.video);
@@ -98,10 +99,10 @@ export function LessonsClientPage() {
 
       formData.itemImages.forEach((item: any, index: number) => {
         if (item.image instanceof File) {
-          form.append(`itemImages[${index}].image`, item.image);
+          form.append(`ItemImages[${index}].Image`, item.image);
         }
-        form.append(`itemImages[${index}].description`, item.description || "");
-        form.append(`itemImages[${index}].altText`, "");
+        form.append(`ItemImages[${index}].AltText`, item.altText || "");
+        form.append(`ItemImages[${index}].Description`, item.description || "");
       });
 
       const res = await fetch(`${Backend_Url}/Lessons/CreateLessonItems`, {
@@ -114,17 +115,17 @@ export function LessonsClientPage() {
 
       if (!res.ok) throw new Error("Upload failed");
 
-      toast.success("Lesson saved successfully");
+      toast.success("✅ Lesson created successfully");
       setRefetchTrigger((n) => n + 1);
     } catch (err) {
-      console.error(err);
-      toast.error("Error saving lesson");
+      console.error("❌ Error", err);
+      toast.error("❌ Error creating lesson");
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-8">
-      <div className="py-2 px-4 sticky mt-3 -top-[16px] z-90 bg-black text-white flex justify-between rounded-lg">
+      <div className="py-2 px-4 sticky pb-4 -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
         <div>
           <h2 className="text-xl">Add Courses</h2>
           <p className="text-xs text-[#FFFFFFB0]">Let's check your update today.</p>
@@ -132,29 +133,30 @@ export function LessonsClientPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc]"
+          className="px-6 py-1 text-sm ms-auto text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc]"
         >
           {isSubmitting ? "Saving..." : "Save"}
         </button>
       </div>
 
-      <div className="flex mt-4 gap-7">
+      <div className="flex mt-4 gap-7 mx-3">
         <div className="w-2/3 flex flex-col gap-7">
           {lessonId ? (
             <>
               <Textarea {...register("intro")} id="intro" placeholder="Lesson intro" />
 
-              <div className="flex flex-col p-3 bg-white border shadow rounded-xl gap-3">
+              <div className="flex flex-col p-3 bg-white  shadow rounded-xl gap-3">
                 <Controller
                   control={control}
                   name="video"
                   render={({ field }) => (
                     <FileUploader
-                      id="video"
+                      key={`video-${lessonId}`}
+                      id={`video-${lessonId}`}
                       type="video"
                       bg="/images/uploadImageBg.png"
                       file={field.value}
-                      initialPreviewUrl={control._formValues.videoPreview} // ⬅️ updated prop name
+                      initialPreviewUrl={watch("videoPreview")}
                       onFileChange={field.onChange}
                     />
                   )}
@@ -169,7 +171,8 @@ export function LessonsClientPage() {
                       type="image"
                       bg="/images/uploadImageBg.png"
                       file={field.value}
-                      initialPreviewUrl={control._formValues.videoPlaceholderPreview}
+                      initialPreviewUrl={watch("videoPlaceholderPreview")}
+                      onFileChange={field.onChange}
                     />
                   )}
                 />
@@ -179,9 +182,8 @@ export function LessonsClientPage() {
 
               <div className="flex gap-3">
                 {[0, 1].map((i) => (
-                  <div className="flex flex-col w-full gap-2" key={i}>
+                  <div className="flex flex-col w-full gap-2 p-3 bg-white  shadow rounded-xl " key={i}>
                     <Controller
-                      key={i}
                       control={control}
                       name={`itemImages.${i}.image`}
                       render={({ field }) => (
@@ -190,7 +192,8 @@ export function LessonsClientPage() {
                           type="image"
                           bg="/images/uploadImageBg.png"
                           file={field.value}
-                          initialPreviewUrl={control._formValues.itemImages?.[i]?.previewUrl}
+                          initialPreviewUrl={watch(`itemImages.${i}.previewUrl`)}
+                          onFileChange={field.onChange}
                         />
                       )}
                     />
