@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaRegEye, FaEdit, FaTrashAlt, FaCalendarAlt } from "react-icons/fa";
-import { Backend_Url, Fake_Token } from "@/constants";
+import { Backend_Url, Fake_Token, Files_Url } from "@/constants";
 import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
 import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
@@ -150,6 +150,7 @@ const CoursesTable = () => {
           <table className="w-full text-sm text-left text-gray-700">
             <thead className="text-xs capitalize text-center text-gray-500">
               <tr>
+                <th className="px-4 py-2">Cover Image</th>
                 <th className="px-4 py-2">Course Name</th>
                 <th className="px-4 py-2">ID</th>
                 <th className="px-4 py-2">Instructor</th>
@@ -163,6 +164,16 @@ const CoursesTable = () => {
             <tbody>
               {paginatedCourses.map((course) => (
                 <tr key={course.id} className="border-b text-center border-[#00000021] hover:bg-gray-50 transition">
+                  <td className="px-4 py-2 bg">
+                    {course.coverImage ? (
+                      <img
+                        src={`${Files_Url}${course.coverImage}`}
+                        className="w-10 h-10 rounded-lg overflow-hidden mx-auto shadow"
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </td>
                   <td className="px-4 py-2">{course.name}</td>
                   <td className="px-4 py-2">{course.id}</td>
                   <td className="px-4 py-2">{course.instructors?.join(", ") || "—"}</td>
@@ -170,7 +181,7 @@ const CoursesTable = () => {
                   <td className="px-4 py-2">{course.duration || "—"}</td>
                   <td className="px-4 py-2">{course.level || "—"}</td>
                   <td className="px-4 py-2">
-                    <span className="bg-[#00E0962B] text-[#00E096] px-3 py-1 rounded-full text-xs font-semibold">
+                    <span className="bg-[#00E0962B] text-[#00E096] text-nowrap px-3 py-1 rounded-full text-xs font-semibold">
                       {course.status || "—"}
                     </span>
                   </td>

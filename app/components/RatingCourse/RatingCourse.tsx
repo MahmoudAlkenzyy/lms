@@ -34,7 +34,7 @@ const RatingCourse = ({ disabled }: { disabled: boolean }) => {
           disabled={disabled}
           onClick={toggleRating}
           className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${
-            isRatingEnabled ? "bg-violet-600" : "bg-gray-300"
+            isRatingEnabled && !disabled ? "bg-violet-600" : "bg-gray-300"
           }`}
         >
           <span

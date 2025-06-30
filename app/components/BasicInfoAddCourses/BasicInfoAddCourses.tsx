@@ -1,16 +1,27 @@
 "use client";
 
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { RichEditor } from "../RichEditor/RichEditor";
+import { Backend_Url, Fake_Token, Files_Url } from "../../../constants";
+import { useSearchParams } from "next/navigation";
 
-const BasicInfoAddCourses = ({ disabled }: { disabled: boolean }) => {
+interface Props {
+  setStep: (step: string) => void;
+  setCourseId: (id: string) => void;
+  disabled: boolean;
+}
+
+const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }) => {
   const [image, setImage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const searchParams = useSearchParams();
+  const courseIdFromURL = searchParams.get("id");
 
   const {
     register,
     setValue,
+    reset,
     formState: { errors },
   } = useFormContext();
 
@@ -22,6 +33,51 @@ const BasicInfoAddCourses = ({ disabled }: { disabled: boolean }) => {
       setValue("CoverImage", file, { shouldValidate: true });
     }
   };
+
+  useEffect(() => {
+    const fetchCourseById = async () => {
+      if (!courseIdFromURL) return;
+
+      try {
+        const response = await fetch(`${Backend_Url}/Courses/GetCourseBasicInfo?Id=${courseIdFromURL}`, {
+          method: "GET",
+          headers: {
+            Accept: "text/plain",
+            Authorization: Fake_Token,
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.isSuccess && data.course) {
+          const course = data.course;
+
+          setCourseId(course.id);
+          setStep(course.status || "new");
+
+          reset({
+            Name: course.name ?? "",
+            Description: course.description ?? "",
+            Prerequisites: course.prerequisites ?? "",
+            Outcome: course.outcome ?? "",
+            CoverImage: null,
+          });
+
+          if (course.coverImage) {
+            setImage(`${Files_Url}${course.coverImage}`);
+          }
+        } else {
+          console.warn("Course not found, starting fresh.");
+          setStep("new");
+        }
+      } catch (error) {
+        console.error("Error loading course:", error);
+        setStep("new");
+      }
+    };
+
+    fetchCourseById();
+  }, [courseIdFromURL]);
 
   return (
     <div className="bg-white rounded shadow p-5 pt-2 ps-2">

@@ -1,23 +1,35 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
-  const [isAutoDuration, setIsAutoDuration] = useState(false);
   const {
     register,
     setValue,
-    formState: { errors },
     clearErrors,
+    control,
+    formState: { errors },
   } = useFormContext();
 
-  // Sync allowDynamicDuration with toggle state
+  // Watch allowDynamicDuration field value from the form
+  const watchedAllowDynamic = useWatch({ control, name: "allowDynamicDuration" });
+
+  const [isAutoDuration, setIsAutoDuration] = useState(false);
+
+  // Sync internal toggle with form value
+  useEffect(() => {
+    if (watchedAllowDynamic !== undefined) {
+      setIsAutoDuration(Boolean(watchedAllowDynamic));
+    }
+  }, [watchedAllowDynamic]);
+
+  // Update the form value when toggling the switch
   useEffect(() => {
     setValue("allowDynamicDuration", isAutoDuration, { shouldValidate: true });
-
     if (isAutoDuration) {
-      clearErrors("duration"); // make sure we clear the error
+      setValue("duration", undefined); // Clear duration if auto mode is ON
+      clearErrors("duration");
     }
   }, [isAutoDuration, setValue, clearErrors]);
 
@@ -36,23 +48,27 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
         Course Duration
       </label>
 
-      {/* Hidden field to bind allowDynamicDuration to the form */}
-      <input disabled type="hidden" {...register("allowDynamicDuration")} />
+      {/* Hidden form field */}
+      <input type="hidden" {...register("allowDynamicDuration")} />
 
       <div className="relative">
         <input
           type="number"
           id="duration"
-          //   disabled={disabled}
+          min={0}
           placeholder="Enter duration"
-          disabled={false}
+          disabled={isAutoDuration || disabled}
           {...register("duration", {
             required: !isAutoDuration ? "Course duration is required" : false,
+            min: {
+              value: 0,
+              message: "Duration must be positive",
+            },
             valueAsNumber: true,
           })}
           className={`w-full pr-14 px-4 py-2 border border-gray-300 rounded-md shadow-sm transition focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 ${
             isAutoDuration ? "bg-gray-100 cursor-not-allowed" : ""
-          }+ ${disabled ? " opacity-50 cursor-not-allowed" : ""}`}
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""} no-spinner`}
         />
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none text-sm">min</span>
       </div>
@@ -61,7 +77,6 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
 
       <div className="flex items-center justify-between pt-2">
         <p className="text-sm text-gray-600">Allow automatic duration</p>
-
         <button
           type="button"
           disabled={disabled}

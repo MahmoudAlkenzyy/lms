@@ -1,9 +1,9 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect } from "react";
-import { GoItalic } from "react-icons/go";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
+import { useEffect } from "react";
+import { GoItalic } from "react-icons/go";
 import { RiBold } from "react-icons/ri";
 import { CiTextAlignJustify, CiTextAlignLeft, CiTextAlignRight } from "react-icons/ci";
 import { useFormContext } from "react-hook-form";
@@ -26,7 +26,10 @@ export const RichEditor: React.FC<RichEditorProps> = ({
   disabled = false,
 }) => {
   const minHeight = `${rows * 24}px`;
-  const { register, setValue } = useFormContext();
+  const { register, setValue, getValues, watch } = useFormContext();
+
+  // Get current value from form context
+  const currentValue = watch(name) || getValues(name) || "";
 
   const editor = useEditor({
     extensions: [
@@ -34,16 +37,24 @@ export const RichEditor: React.FC<RichEditorProps> = ({
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Underline,
     ],
-    content: "",
-    editable: !disabled, // 💡 مهم جداً
+    content: currentValue,
+    editable: !disabled,
     onUpdate: ({ editor }) => {
       setValue(name, editor.getHTML(), { shouldValidate: true });
     },
   });
 
+  // Register field manually
   useEffect(() => {
-    register(name); // لازم نسجل اسم الفيلد
+    register(name);
   }, [register, name]);
+
+  // Watch for external changes (like form reset) and update content
+  useEffect(() => {
+    if (editor && currentValue !== editor.getHTML()) {
+      editor.commands.setContent(currentValue || "");
+    }
+  }, [currentValue, editor]);
 
   return (
     <div className="mt-4">
@@ -54,7 +65,7 @@ export const RichEditor: React.FC<RichEditorProps> = ({
       )}
 
       <div className={`border border-gray-300 rounded shadow-sm p-3 ${disabled ? "bg-gray-100" : "bg-white"}`}>
-        {/* Toolbar buttons */}
+        {/* Toolbar */}
         <div className="flex flex-wrap gap-2 mb-2 border-b border-gray-300 text-[#0000008C] pb-2">
           {[
             { icon: <CiTextAlignLeft />, action: () => editor?.chain().focus().setTextAlign("left").run() },

@@ -55,9 +55,15 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
   }, []);
 
   const addTag = (tag: Tag) => {
+    if (selectedTagIds.length >= 10) {
+      setError("You can select up to 10 tags only");
+      return;
+    }
+
     if (!selectedTagIds.includes(tag.id)) {
       const updated = [...selectedTagIds, tag.id];
       setValue("courseTags", updated, { shouldValidate: true });
+      setError(""); // clear error if user is back under limit
     }
   };
 
@@ -102,6 +108,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
     ${disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"}
   `}
           />
+          {selectedTagIds.length >= 10 && <p className="text-yellow-600 text-sm">Maximum of 10 tags allowed</p>}
 
           <datalist id="tags-list">
             {availableTags.map((tag) => (
