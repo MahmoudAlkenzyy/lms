@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Backend_Url, Fake_Token } from "@/constants";
 
@@ -25,6 +25,9 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
 
   const [showInstructorList, setShowInstructorList] = useState(false);
   const [showAssistantList, setShowAssistantList] = useState(false);
+
+  const instructorRef = useRef<HTMLDivElement>(null);
+  const assistantRef = useRef<HTMLDivElement>(null);
 
   const isRatingEnabled = watch("allowRatingOnInstructor") || false;
 
@@ -62,6 +65,22 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
     fetchPeople();
   }, [register]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (instructorRef.current && !instructorRef.current.contains(event.target as Node)) {
+        setShowInstructorList(false);
+      }
+      if (assistantRef.current && !assistantRef.current.contains(event.target as Node)) {
+        setShowAssistantList(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const filteredInstructors = instructors.filter((p) => p.name.toLowerCase().includes(instructorQuery.toLowerCase()));
   const filteredAssistants = assistants.filter((p) => p.name.toLowerCase().includes(assistantQuery.toLowerCase()));
 
@@ -71,7 +90,7 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Instructor Autocomplete */}
-        <div className="relative w-full">
+        <div className="relative w-full" ref={instructorRef}>
           <label className="block text-sm font-medium text-gray-700 mb-1">Instructor *</label>
           <input
             type="text"
@@ -94,7 +113,9 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
                     key={i.id}
                     onClick={() => {
                       setInstructorQuery(i.name);
-                      setValue("instructorIds", [i.id], { shouldValidate: true });
+                      setValue("instructorIds", [i.id], {
+                        shouldValidate: true,
+                      });
                       setShowInstructorList(false);
                     }}
                     className="px-4 py-2 text-sm hover:bg-violet-100 cursor-pointer"
@@ -111,7 +132,7 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
         </div>
 
         {/* Assistant Autocomplete */}
-        <div className="relative w-full">
+        <div className="relative w-full" ref={assistantRef}>
           <label className="block text-sm font-medium text-gray-700 mb-1">Assistant (optional)</label>
           <input
             type="text"

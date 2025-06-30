@@ -113,7 +113,9 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
           disabled={disabled}
           {...register("Name", { required: "Course name is required" })}
           placeholder="Enter your course name"
-          className="px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className={`px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${
+            disabled ? "bg-gray-100" : "bg-white"
+          }`}
         />
         {errors.Name && <span className="text-red-500 text-sm">{errors.Name.message as string}</span>}
       </div>
