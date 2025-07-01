@@ -150,9 +150,10 @@ const CoursesTable = () => {
           <table className="w-full text-sm text-left text-gray-700">
             <thead className="text-xs capitalize text-center text-gray-500">
               <tr>
-                <th className="px-4 py-2">Cover Image</th>
-                <th className="px-4 py-2">Course Name</th>
-                <th className="px-4 py-2">ID</th>
+                <th className="px-4 py-2 text-center ps-4 " colSpan={2}>
+                  Course Name
+                </th>
+                <th className="px-4 py-2">Course Code</th>
                 <th className="px-4 py-2">Instructor</th>
                 <th className="px-4 py-2">Lessons</th>
                 <th className="px-4 py-2">Duration</th>
@@ -164,18 +165,18 @@ const CoursesTable = () => {
             <tbody>
               {paginatedCourses.map((course) => (
                 <tr key={course.id} className="border-b text-center border-[#00000021] hover:bg-gray-50 transition">
-                  <td className="px-4 py-2 bg">
+                  <td className="px-4  py-2 bg ">
                     {course.coverImage ? (
                       <img
                         src={`${Files_Url}${course.coverImage}`}
-                        className="w-10 h-10 rounded-lg overflow-hidden mx-auto shadow"
+                        className="w-10 h-10 rounded-lg overflow-hidden me-auto shadow "
                       />
                     ) : (
                       ""
                     )}
                   </td>
-                  <td className="px-4 py-2">{course.name}</td>
-                  <td className="px-4 py-2">{course.id}</td>
+                  <td className="px-4 ps-0 py-2 text-start">{course.name}</td>
+                  <td className="px-4 py-2">{course.code || "—"}</td>
                   <td className="px-4 py-2">{course.instructors?.join(", ") || "—"}</td>
                   <td className="px-4 py-2">{course.lessonsCount || 0}</td>
                   <td className="px-4 py-2">{course.duration || "—"}</td>

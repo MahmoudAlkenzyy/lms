@@ -52,7 +52,7 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
       fetchChapters();
     } catch (err) {
       toast.dismiss();
-      toast.error("❌ Failed to delete lesson");
+      toast.error(" Failed to delete lesson");
     }
   };
   const router = useRouter();

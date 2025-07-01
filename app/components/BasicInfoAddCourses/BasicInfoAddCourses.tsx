@@ -33,7 +33,11 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
       setValue("CoverImage", file, { shouldValidate: true });
     }
   };
-
+  useEffect(() => {
+    register("Description", {
+      required: "Description is required",
+    });
+  }, [register]);
   useEffect(() => {
     const fetchCourseById = async () => {
       if (!courseIdFromURL) return;
@@ -78,6 +82,7 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
 
     fetchCourseById();
   }, [courseIdFromURL]);
+  console.log({ errors });
 
   return (
     <div className="bg-white rounded shadow p-5 pt-2 ps-2">
@@ -128,6 +133,8 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
         placeholder="Enter description"
         rows={4}
       />
+      {errors.Description && <span className="text-red-500 text-sm">{errors.Description.message as string}</span>}
+
       <RichEditor
         disabled={disabled}
         label="Prerequisites"

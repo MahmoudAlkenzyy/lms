@@ -1,4 +1,4 @@
 export const Backend_Url = "https://qulms.runasp.net/api";
-export const Files_Url = "https://qulms.runasp.net/";
+export const Files_Url = "https://qulms.runasp.net";
 export const Fake_Token =
   "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImJmYTBhZDU2LTBjZTgtNDVhZi04ZDQzLTBmZjJmYTUzMzdmMyIsImVtYWlsIjoiYWRtaW5AbG9jYWxob3N0IiwidXNzIjoiRVFQQ0pER0ZOMlFWSVpKRjRFWEsyVVhYNjRBTVc1RloiLCJyb2xlcyI6WyJVcGRhdGUiLCJVc2VyIiwiQ3JlYXRlIiwiRGVsZXRlIiwiQ29tcGFueSIsIlJlYWQiLCJBZG1pbiIsIlVzZXJQcm8iLCJTdWJBZG1pbiJdLCJleHAiOjE3NjY1MDc3MTQsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3QifQ.VUsQ316FRZzVPRNJzuhxPCf3m-CZHN8norndb8gNrjI";

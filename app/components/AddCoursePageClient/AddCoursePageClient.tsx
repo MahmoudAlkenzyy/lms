@@ -24,8 +24,8 @@ export default function AddCoursePageClient() {
   const [step, setStep] = useState("new");
   const [courseId, setCourseId] = useState("");
 
-  const stepConfigs = createStepConfigs(basicInfoForm, sidePanelForm, instructorForm, contentForm);
-  const activeStepConfig = stepConfigs.find((s) => s.step === step);
+  const stepConfigs: any = createStepConfigs(basicInfoForm, sidePanelForm, instructorForm, contentForm);
+  const activeStepConfig = stepConfigs.find((s: any) => s.step === step);
 
   const handleAllSubmits = async () => {
     if (!activeStepConfig) return;

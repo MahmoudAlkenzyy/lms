@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
+import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
+import { Backend_Url, Fake_Token, Files_Url } from "@/constants";
 import FileUploader from "@/app/components/FileUploader/FileUploader";
 import Textarea from "@/app/components/Textarea/Textarea";
 import CurriculumBar from "@/app/components/CurriculumBar/CurriculumBar";
-import { Backend_Url, Fake_Token, Files_Url } from "@/constants";
-import { toast } from "react-toastify";
+import { FiSave, FiLoader } from "react-icons/fi";
 
 export function LessonsClientPage() {
   const searchParams = useSearchParams();
@@ -16,6 +18,7 @@ export function LessonsClientPage() {
 
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+  const [isLoadingLesson, setIsLoadingLesson] = useState(false);
 
   const {
     register,
@@ -23,7 +26,7 @@ export function LessonsClientPage() {
     handleSubmit,
     reset,
     watch,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm({
     defaultValues: {
       intro: "",
@@ -40,12 +43,15 @@ export function LessonsClientPage() {
   });
 
   const fetchLessonData = async (id: string) => {
+    setIsLoadingLesson(true);
     try {
       const res = await fetch(`${Backend_Url}/Lessons/GetLesson?LessonId=${id}`, {
         headers: { Authorization: Fake_Token },
       });
-      const data = await res.json();
 
+      if (!res.ok) throw new Error("Failed to fetch lesson");
+
+      const data = await res.json();
       if (data.lesson) {
         reset({
           intro: data.lesson.intro ?? "",
@@ -71,23 +77,27 @@ export function LessonsClientPage() {
       }
     } catch (err) {
       console.error("Failed to fetch lesson data", err);
+      toast.error("Failed to load lesson data");
+    } finally {
+      setIsLoadingLesson(false);
     }
   };
 
   useEffect(() => {
     if (lessonId) fetchLessonData(lessonId);
   }, [lessonId]);
+
   const onSubmit = async (formData: any) => {
     try {
       const form = new FormData();
 
-      form.append("LessonId", lessonId || "");
-      form.append("Name", formData.name);
+      form.append("LessonId", activeLessonId || "");
+      form.append("Name", formData.name || "Untitled Lesson");
       form.append("Intro", formData.intro);
-      form.append("Order", String(formData.order));
-      form.append("Type", String(formData.type));
+      form.append("Order", String(formData.order || 0));
+      form.append("Type", String(formData.type || 0));
       form.append("Description", formData.description);
-      form.append("Duration", formData.duration);
+      form.append("Duration", formData.duration || "0");
 
       if (formData.video instanceof File) {
         form.append("Video", formData.video);
@@ -115,113 +125,209 @@ export function LessonsClientPage() {
 
       if (!res.ok) throw new Error("Upload failed");
 
-      toast.success(" Lesson created successfully");
+      toast.success("Lesson saved successfully");
       setRefetchTrigger((n) => n + 1);
     } catch (err) {
-      console.error(" Error", err);
-      toast.error(" Error creating lesson");
+      console.error("Error", err);
+      toast.error("Error saving lesson");
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-8">
-      <div className="py-2 px-4 sticky pb-4 -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
+      <div className="py-3 px-6 sticky pb-4 -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-between shadow-md">
         <div>
-          <h2 className="text-xl">Add Courses</h2>
-          <p className="text-xs text-[#FFFFFFB0]">Let's check your update today.</p>
+          <h2 className="text-xl font-semibold">Add lesson items</h2>
+          <p className="text-sm text-gray-300">{activeLessonId ? "Editing lesson" : "Select a lesson "}</p>
         </div>
         <button
           type="submit"
-          disabled={isSubmitting}
-          className="px-6 py-1 text-sm ms-auto text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc]"
+          disabled={isSubmitting || !activeLessonId}
+          className="px-6 py-2 text-sm flex items-center gap-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors"
         >
-          {isSubmitting ? "Saving..." : "Save"}
+          {isSubmitting ? (
+            <>
+              <FiLoader className="animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <FiSave />
+              Save
+            </>
+          )}
         </button>
       </div>
 
-      <div className="flex mt-4 gap-7 mx-3">
-        <div className="w-2/3 flex flex-col gap-7">
-          {lessonId ? (
-            <>
-              <Textarea {...register("intro")} id="intro" placeholder="Lesson intro" />
-
-              <div className="flex flex-col p-3 bg-white  shadow rounded-xl gap-3">
-                <Controller
-                  control={control}
-                  name="video"
-                  render={({ field }) => (
-                    <FileUploader
-                      key={`video-${lessonId}`}
-                      id={`video-${lessonId}`}
-                      type="video"
-                      bg="/images/uploadImageBg.png"
-                      file={field.value}
-                      initialPreviewUrl={watch("videoPreview")}
-                      onFileChange={field.onChange}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="videoPlaceholder"
-                  render={({ field }) => (
-                    <FileUploader
-                      id="videoPlaceholder"
-                      type="image"
-                      bg="/images/uploadImageBg.png"
-                      file={field.value}
-                      initialPreviewUrl={watch("videoPlaceholderPreview")}
-                      onFileChange={field.onChange}
-                    />
-                  )}
-                />
-
-                <Textarea {...register("description")} id="description" placeholder="Lesson description" />
-              </div>
-
-              <div className="flex gap-3">
-                {[0, 1].map((i) => (
-                  <div className="flex flex-col w-full gap-2 p-3 bg-white  shadow rounded-xl " key={i}>
-                    <Controller
-                      control={control}
-                      name={`itemImages.${i}.image`}
-                      render={({ field }) => (
-                        <FileUploader
-                          id={`itemImages${i}-image`}
-                          type="image"
-                          bg="/images/uploadImageBg.png"
-                          file={field.value}
-                          initialPreviewUrl={watch(`itemImages.${i}.previewUrl`)}
-                          onFileChange={field.onChange}
-                        />
-                      )}
-                    />
-                    <Textarea
-                      {...register(`itemImages.${i}.description`)}
-                      id={`itemImages.${i}.description`}
-                      placeholder="Image description"
-                    />
-                  </div>
+      <div className="flex flex-col lg:flex-row mt-4 gap-6 mx-4">
+        {/* Main Content Area */}
+        <div className="w-full lg:w-2/3 flex flex-col gap-6">
+          <AnimatePresence mode="wait">
+            {isLoadingLesson ? (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-64 bg-gray-100 rounded-xl animate-pulse"></div>
                 ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-gray-500 text-sm">Select a lesson to view/edit its data</div>
-          )}
+              </motion.div>
+            ) : activeLessonId ? (
+              <motion.div
+                key="lesson-form"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-6"
+              >
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                  <h3 className="font-medium text-lg mb-4">Lesson Introduction</h3>
+                  <Textarea
+                    {...register("intro")}
+                    id="intro"
+                    placeholder="Enter lesson introduction..."
+                    rows={4}
+                    className="min-h-[120px]"
+                  />
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
+                  <h3 className="font-medium text-lg">Media Content</h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Lesson Video</label>
+                      <Controller
+                        control={control}
+                        name="video"
+                        render={({ field }) => (
+                          <FileUploader
+                            key={`video-${lessonId}`}
+                            id={`video-${lessonId}`}
+                            type="video"
+                            bg="/images/uploadImageBg.png"
+                            file={field.value}
+                            initialPreviewUrl={watch("videoPreview")}
+                            onFileChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Video cover</label>
+                      <Controller
+                        control={control}
+                        name="videoPlaceholder"
+                        render={({ field }) => (
+                          <FileUploader
+                            id="videoPlaceholder"
+                            type="image"
+                            bg="/images/uploadImageBg.png"
+                            file={field.value}
+                            initialPreviewUrl={watch("videoPlaceholderPreview")}
+                            onFileChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                      <Textarea
+                        {...register("description")}
+                        id="description"
+                        placeholder="Enter detailed lesson description..."
+                        rows={6}
+                        className="min-h-[150px]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                  <h3 className="font-medium text-lg mb-4">Lesson Materials</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[0, 1].map((i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="space-y-4"
+                      >
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Image {i + 1}</label>
+                          <Controller
+                            control={control}
+                            name={`itemImages.${i}.image`}
+                            render={({ field }) => (
+                              <FileUploader
+                                id={`itemImages${i}-image`}
+                                type="image"
+                                bg="/images/uploadImageBg.png"
+                                file={field.value}
+                                initialPreviewUrl={watch(`itemImages.${i}.previewUrl`)}
+                                onFileChange={field.onChange}
+                              />
+                            )}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Image Description</label>
+                          <Textarea
+                            {...register(`itemImages.${i}.description`)}
+                            id={`itemImages.${i}.description`}
+                            placeholder={`Enter description for image ${i + 1}...`}
+                            rows={3}
+                          />
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="no-lesson"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex flex-col items-center justify-center py-16 bg-white rounded-xl shadow-sm border border-gray-200"
+              >
+                <div className="text-center max-w-md">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Lesson Selected</h3>
+                  <p className="text-gray-600 mb-6">
+                    Please select a lesson from the curriculum sidebar to view or edit its content.
+                  </p>
+                  <div className="lg:hidden">
+                    <button type="button" className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800">
+                      Browse Curriculum
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        <div className="w-1/3">
+        {/* Sidebar - Curriculum */}
+        <div className="w-full lg:w-1/3">
           {courseId ? (
-            <CurriculumBar
-              courseId={courseId}
-              currentLessonId={lessonId ?? ""}
-              onLessonClick={(id) => fetchLessonData(id)}
-              refetchTrigger={refetchTrigger}
-              activeLessonId={activeLessonId}
-            />
+            <div className="sticky top-4">
+              <CurriculumBar
+                courseId={courseId}
+                currentLessonId={lessonId ?? ""}
+                onLessonClick={(id) => {
+                  setActiveLessonId(id);
+                  fetchLessonData(id);
+                }}
+                refetchTrigger={refetchTrigger}
+                activeLessonId={activeLessonId}
+              />
+            </div>
           ) : (
-            <p className="text-sm text-red-500">Course ID not found in URL.</p>
+            <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl">
+              Course ID not found in URL.
+            </div>
           )}
         </div>
       </div>

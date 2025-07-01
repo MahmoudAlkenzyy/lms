@@ -1,18 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { RxDividerVertical } from "react-icons/rx";
 import { Files_Url } from "../../../constants";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface FileUploaderProps {
   id: string;
   type: "image" | "video";
   bg: string;
   className?: string;
-  initialPreviewUrl?: string; // ⬅️ renamed
+  initialPreviewUrl?: string;
   file?: File | null;
   onFileChange?: (file: File | null) => void;
 }
@@ -28,6 +29,7 @@ export default function FileUploader({
 }: FileUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     if (file instanceof File) {
@@ -35,7 +37,6 @@ export default function FileUploader({
       setPreviewUrl(url);
       return () => URL.revokeObjectURL(url);
     } else {
-      // fallback to initialPreviewUrl even if file = null
       setPreviewUrl(initialPreviewUrl || null);
     }
   }, [file, initialPreviewUrl]);
@@ -57,11 +58,13 @@ export default function FileUploader({
   };
 
   return (
-    <div className={`flex flex-col p-3 pb-0 bg-white rounded-xl overflow-hidden ${className}`}>
+    <div className={`flex flex-col p-3 bg-white rounded-xl border border-gray-200 shadow-sm ${className}`}>
       <input id={id} type="file" ref={inputRef} onChange={handleChange} accept={type + "/*"} className="hidden" />
+
       <div
-        onClick={!previewUrl ? handleClick : undefined}
-        className="relative w-full h-64 rounded overflow-hidden flex items-center justify-center cursor-pointer"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="relative w-full h-64 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer"
       >
         {!previewUrl ? (
           <>
@@ -69,26 +72,32 @@ export default function FileUploader({
             <Image fill src="/images/uploadLayer.svg" alt="overlay" className="z-10 bg-[#ffffffbc]" />
           </>
         ) : type === "image" ? (
-          <img src={previewUrl} alt="preview" className="object-contain w-full h-full" />
+          <>
+            <img src={previewUrl} alt="preview" className="object-cover w-full h-full" />
+          </>
         ) : (
-          <video
-            controls
-            src={previewUrl}
-            className="object-contain w-full h-full rounded-lg shadow-md border border-gray-200"
-          />
+          <>
+            <video controls src={previewUrl} className="object-contain w-full h-full rounded-lg" />
+          </>
         )}
       </div>
 
-      <div className="h-[1px] bg-[#00000029] w-full mt-2"></div>
-      {/* <div className="self-end bg-[#7337FF36] flex border border-[#00000029] w-fit rounded-lg py-1 px-3 m-2">
-        <button type="button" onClick={handleClick}>
-          <FaRegEdit size={20} className="text-[#7337FF4e]" />
-        </button>
-        <RxDividerVertical className="text-[#00000029]" />
-        <button type="button" onClick={handleDelete}>
-          <RiDeleteBinLine size={20} className="text-[#EF3826]" />
-        </button>
-      </div> */}
+      <div className="flex justify-between items-center mt-3">
+        <div className="text-xs text-gray-500">{type === "image" ? "JPG, PNG (Max 5MB)" : "MP4 (Max 50MB)"}</div>
+
+        {previewUrl && (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleClick}
+              className="rounded transition-colors cursor-pointer text-indigo-600 hover:text-indigo-800 text-sm flex items-center gap-1"
+            >
+              <FaRegEdit size={14} />
+              Change
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
