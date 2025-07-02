@@ -4,11 +4,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Backend_Url, Fake_Token } from "@/constants";
 import { ChevronDownIcon, ChevronUpIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { FaRegFileAlt, FaRegPlayCircle } from "react-icons/fa";
 
 interface Lesson {
   id: string;
   name: string;
   duration?: number;
+  lessonType: "Video" | "Attachment";
 }
 
 interface Chapter {
@@ -192,9 +194,14 @@ export default function CurriculumBar({
                             className={`flex items-center justify-between gap-3 p-3 rounded-md transition-all text-left `}
                           >
                             <div className="flex items-center gap-3">
-                              <DocumentTextIcon
-                                className={`h-5 w-5 ${isActive ? "text-[#00B087]" : "text-gray-500"}`}
-                              />
+                              {lesson.lessonType == "Attachment" ? (
+                                <FaRegFileAlt className={`h-5 w-5 ${isActive ? "text-[#00B087]" : "text-gray-500"}`} />
+                              ) : (
+                                <FaRegPlayCircle
+                                  className={`h-5 w-5 ${isActive ? "text-[#00B087]" : "text-gray-500"}`}
+                                />
+                              )}
+
                               <span className={`text-sm ${isActive ? "font-medium text-[#00B087]" : "text-gray-700"}`}>
                                 {lesson.name}
                               </span>

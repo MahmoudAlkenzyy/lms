@@ -175,7 +175,7 @@ const CoursesTable = () => {
                       ""
                     )}
                   </td>
-                  <td className="px-4 ps-0 py-2 text-start">{course.name}</td>
+                  <td className="px-4 ps-0 py-2 text-start max-w-32">{course.name}</td>
                   <td className="px-4 py-2">{course.code || "—"}</td>
                   <td className="px-4 py-2">{course.instructors?.join(", ") || "—"}</td>
                   <td className="px-4 py-2">{course.lessonsCount || 0}</td>

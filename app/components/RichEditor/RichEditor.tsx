@@ -72,8 +72,8 @@ export const RichEditor: React.FC<RichEditorProps> = ({
             { icon: <RiBold />, action: () => editor?.chain().focus().toggleBold().run() },
             { icon: <GoItalic />, action: () => editor?.chain().focus().toggleItalic().run() },
             { icon: <u>U</u>, action: () => editor?.chain().focus().toggleUnderline().run() },
-            { icon: <>Normal</>, action: () => editor?.chain().focus().setParagraph().run() },
-            { icon: <>H2</>, action: () => editor?.chain().focus().toggleHeading({ level: 2 }).run() },
+            // { icon: <>Normal</>, action: () => editor?.chain().focus().setParagraph().run() },
+            // { icon: <>H2</>, action: () => editor?.chain().focus().toggleHeading({ level: 2 }).run() },
           ].map((btn, i) => (
             <button
               key={i}

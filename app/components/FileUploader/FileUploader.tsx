@@ -3,14 +3,10 @@
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { FaRegEdit } from "react-icons/fa";
-import { RiDeleteBinLine } from "react-icons/ri";
-import { RxDividerVertical } from "react-icons/rx";
-import { Files_Url } from "../../../constants";
-import { AnimatePresence, motion } from "framer-motion";
 
 interface FileUploaderProps {
   id: string;
-  type: "image" | "video";
+  type: "image" | "video" | "pdf";
   bg: string;
   className?: string;
   initialPreviewUrl?: string;
@@ -59,12 +55,20 @@ export default function FileUploader({
 
   return (
     <div className={`flex flex-col p-3 bg-white rounded-xl border border-gray-200 shadow-sm ${className}`}>
-      <input id={id} type="file" ref={inputRef} onChange={handleChange} accept={type + "/*"} className="hidden" />
+      <input
+        id={id}
+        type="file"
+        ref={inputRef}
+        onChange={handleChange}
+        accept={type === "pdf" ? "application/pdf" : `${type}/*`}
+        className="hidden"
+      />
 
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className="relative w-full h-64 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer"
+        onClick={handleClick}
       >
         {!previewUrl ? (
           <>
@@ -72,18 +76,18 @@ export default function FileUploader({
             <Image fill src="/images/uploadLayer.svg" alt="overlay" className="z-10 bg-[#ffffffbc]" />
           </>
         ) : type === "image" ? (
-          <>
-            <img src={previewUrl} alt="preview" className="object-cover w-full h-full" />
-          </>
+          <img src={previewUrl} alt="preview" className="object-cover w-full h-full" />
+        ) : type === "video" ? (
+          <video controls src={previewUrl} className="object-contain w-full h-full rounded-lg" />
         ) : (
-          <>
-            <video controls src={previewUrl} className="object-contain w-full h-full rounded-lg" />
-          </>
+          <embed src={previewUrl} type="application/pdf" className="w-full h-full rounded-lg" />
         )}
       </div>
 
       <div className="flex justify-between items-center mt-3">
-        <div className="text-xs text-gray-500">{type === "image" ? "JPG, PNG (Max 5MB)" : "MP4 (Max 50MB)"}</div>
+        <div className="text-xs text-gray-500">
+          {type === "image" ? "JPG, PNG (Max 5MB)" : type === "video" ? "MP4 (Max 50MB)" : "PDF (Max 10MB)"}
+        </div>
 
         {previewUrl && (
           <div className="flex gap-2">

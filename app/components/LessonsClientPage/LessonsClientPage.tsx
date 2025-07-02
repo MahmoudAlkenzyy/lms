@@ -35,6 +35,7 @@ export function LessonsClientPage() {
       description: "",
       videoPreview: "",
       videoPlaceholderPreview: "",
+      type: "Video", // default
       itemImages: [
         { image: null, description: "", previewUrl: "" },
         { image: null, description: "", previewUrl: "" },
@@ -60,6 +61,7 @@ export function LessonsClientPage() {
           videoPlaceholder: null,
           videoPlaceholderPreview: data.lesson.videoPlaceholder ? `${Files_Url}${data.lesson.videoPlaceholder}` : "",
           description: data.lesson.description ?? "",
+          type: data.lesson.type ?? "Video",
           itemImages: [
             {
               image: null,
@@ -95,7 +97,7 @@ export function LessonsClientPage() {
       form.append("Name", formData.name || "Untitled Lesson");
       form.append("Intro", formData.intro);
       form.append("Order", String(formData.order || 0));
-      form.append("Type", String(formData.type || 0));
+      form.append("Type", String(formData.type || "Video"));
       form.append("Description", formData.description);
       form.append("Duration", formData.duration || "0");
 
@@ -132,6 +134,8 @@ export function LessonsClientPage() {
       toast.error("Error saving lesson");
     }
   };
+
+  const isPdf = watch("type") === "Attachment";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-8">
@@ -194,7 +198,9 @@ export function LessonsClientPage() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Lesson Video</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {isPdf ? "Lesson File (PDF)" : "Lesson Video"}
+                      </label>
                       <Controller
                         control={control}
                         name="video"
@@ -202,7 +208,7 @@ export function LessonsClientPage() {
                           <FileUploader
                             key={`video-${lessonId}`}
                             id={`video-${lessonId}`}
-                            type="video"
+                            type={isPdf ? "pdf" : "video"}
                             bg="/images/uploadImageBg.png"
                             file={field.value}
                             initialPreviewUrl={watch("videoPreview")}
@@ -212,23 +218,25 @@ export function LessonsClientPage() {
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Video cover</label>
-                      <Controller
-                        control={control}
-                        name="videoPlaceholder"
-                        render={({ field }) => (
-                          <FileUploader
-                            id="videoPlaceholder"
-                            type="image"
-                            bg="/images/uploadImageBg.png"
-                            file={field.value}
-                            initialPreviewUrl={watch("videoPlaceholderPreview")}
-                            onFileChange={field.onChange}
-                          />
-                        )}
-                      />
-                    </div>
+                    {!isPdf && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Video cover</label>
+                        <Controller
+                          control={control}
+                          name="videoPlaceholder"
+                          render={({ field }) => (
+                            <FileUploader
+                              id="videoPlaceholder"
+                              type="image"
+                              bg="/images/uploadImageBg.png"
+                              file={field.value}
+                              initialPreviewUrl={watch("videoPlaceholderPreview")}
+                              onFileChange={field.onChange}
+                            />
+                          )}
+                        />
+                      </div>
+                    )}
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
@@ -309,21 +317,19 @@ export function LessonsClientPage() {
           </AnimatePresence>
         </div>
 
-        {/* Sidebar - Curriculum */}
+        {/* Sidebar */}
         <div className="w-full lg:w-1/3">
           {courseId ? (
-            <div className="sticky top-4">
-              <CurriculumBar
-                courseId={courseId}
-                currentLessonId={lessonId ?? ""}
-                onLessonClick={(id) => {
-                  setActiveLessonId(id);
-                  fetchLessonData(id);
-                }}
-                refetchTrigger={refetchTrigger}
-                activeLessonId={activeLessonId}
-              />
-            </div>
+            <CurriculumBar
+              courseId={courseId}
+              currentLessonId={lessonId ?? ""}
+              onLessonClick={(id) => {
+                setActiveLessonId(id);
+                fetchLessonData(id);
+              }}
+              refetchTrigger={refetchTrigger}
+              activeLessonId={activeLessonId}
+            />
           ) : (
             <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl">
               Course ID not found in URL.
