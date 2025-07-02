@@ -23,6 +23,7 @@ export function LessonsPreviewPageClient() {
   const [videoProgress, setVideoProgress] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
+  // const fetchCourse
   const fetchLessonData = async (id: string) => {
     setIsLoading(true);
     setError(null);
@@ -240,7 +241,6 @@ export function LessonsPreviewPageClient() {
         </AnimatePresence>
       </div>
 
-      {/* Sidebar - Curriculum */}
       <div className="w-full lg:w-1/3">
         {courseId ? (
           <div className="sticky top-4 space-y-4">

@@ -10,8 +10,8 @@ import { useForm } from "react-hook-form";
 
 type FormData = {
   title: string;
-  type: string;
-  duration: string;
+  type: "Attachment" | "Video";
+  duration: number;
 };
 
 const AddLessonModal = ({
@@ -31,23 +31,35 @@ const AddLessonModal = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<FormData>({
     defaultValues: {
       title: "",
       type: "Attachment",
-      duration: "00:00:00",
+      duration: 0,
     },
   });
 
   useEffect(() => {
-    if (!isOpen) reset(); // reset form when modal closes
+    if (!isOpen) reset();
   }, [isOpen, reset]);
 
+  const convertMinutesToHHMMSS = (minutes: number): string => {
+    const hrs = Math.floor(minutes / 60);
+    const mins = Math.floor(minutes % 60);
+    const secs = 0;
+
+    const pad = (num: number) => String(num).padStart(2, "0");
+
+    return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+  };
   const onSubmit = async (data: FormData) => {
     if (!chapterId) {
       toast.error("Chapter ID not found in URL.");
       return;
     }
+
+    const formattedDuration = convertMinutesToHHMMSS(data.duration);
 
     try {
       const res = await fetch(`${Backend_Url}/Lessons/CreateLesson`, {
@@ -61,7 +73,7 @@ const AddLessonModal = ({
           Name: data.title,
           order: "1",
           Type: data.type,
-          Duration: data.duration,
+          Duration: formattedDuration,
         }),
       });
 
@@ -70,7 +82,7 @@ const AddLessonModal = ({
       toast.success("Lesson created successfully!");
       setIsOpen(false);
       refetch?.();
-      reset(); // clear form
+      reset();
     } catch (err) {
       toast.error("Failed to create lesson");
       console.error(err);
@@ -115,7 +127,7 @@ const AddLessonModal = ({
                 <label className="block text-sm font-medium mb-1 text-[#7337FF]">Lesson type</label>
                 <div className="relative">
                   <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                    <FaRegFileAlt />
+                    {watch("type") === "Video" ? <FaRegPlayCircle /> : <FaRegFileAlt />}
                   </div>
                   <select
                     {...register("type", { required: "Type is required" })}
@@ -130,19 +142,24 @@ const AddLessonModal = ({
                 {errors.type && <p className="text-xs text-red-600 mt-1">{errors.type.message}</p>}
               </div>
 
-              {/* Duration */}
               <div>
-                <label className="block text-sm font-medium mb-1 text-[#7337FF]">Duration of lesson</label>
-                <input
-                  type="time"
-                  step={1}
-                  {...register("duration", { required: "Duration is required" })}
-                  className={`w-full px-3 py-2 border ${
-                    errors.duration ? "border-red-500" : "border-gray-300"
-                  } rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#7337FF] focus:border-[#7337FF]`}
-                />
-                <p className="text-xs text-gray-500 mt-1">Format: HH:MM:SS</p>
-                {errors.duration && <p className="text-xs text-red-600">{errors.duration.message}</p>}
+                <label className="block text-sm font-medium mb-1 text-[#7337FF]">Duration (minutes)</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min={1}
+                    {...register("duration", {
+                      required: "Duration is required",
+                      min: { value: 1, message: "Must be at least 1 minute" },
+                    })}
+                    className={`w-full px-3 py-2 pr-12 border ${
+                      errors.duration ? "border-red-500" : "border-gray-300"
+                    } rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#7337FF] focus:border-[#7337FF]`}
+                    placeholder="Enter duration"
+                  />
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">min</span>
+                </div>
+                {errors.duration && <p className="text-xs text-red-600 mt-1">{errors.duration.message}</p>}
               </div>
 
               {/* Buttons */}
