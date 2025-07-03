@@ -31,11 +31,12 @@ const MetaDataAddCourse = ({ step, courseId }: { step: string; courseId: string 
         const data = await response.json();
         if (data.isSuccess && data.course) {
           const course = data.course;
+          console.log(course.coursesTags);
 
           reset({
             categoryIds: course.categories?.map((c: any) => c.id) || [],
             levelId: course.level?.id || "",
-            courseTags: course.coursesTags?.map((t: any) => t.id) || [],
+            coursesTags: course.coursesTags?.map((t: any) => t.id) || [],
             allowRatingOnContent: course.allowRatingOnContent || false,
             code: course.code || "",
             duration: course.duration || "",

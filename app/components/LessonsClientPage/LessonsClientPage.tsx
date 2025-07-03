@@ -195,8 +195,9 @@ export function LessonsClientPage() {
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                   <h3 className="font-medium text-lg mb-4">Lesson Introduction</h3>
                   <Textarea
-                    {...register("intro")}
+                    {...register("intro", { required: "intro is required" })}
                     id="intro"
+                    error={errors.intro}
                     placeholder="Enter lesson introduction..."
                     rows={4}
                     className="min-h-[120px]"
@@ -214,16 +215,22 @@ export function LessonsClientPage() {
                       <Controller
                         control={control}
                         name="video"
-                        render={({ field }) => (
-                          <FileUploader
-                            key={`video-${lessonId}`}
-                            id={`video-${lessonId}`}
-                            type={isPdf ? "pdf" : "video"}
-                            bg="/images/uploadImageBg.png"
-                            file={field.value}
-                            initialPreviewUrl={watch("videoPreview")}
-                            onFileChange={field.onChange}
-                          />
+                        rules={{ required: "Video is required" }}
+                        render={({ field, fieldState }) => (
+                          <>
+                            <FileUploader
+                              key={`video-${lessonId}`}
+                              id={`video-${lessonId}`}
+                              type={isPdf ? "pdf" : "video"}
+                              bg="/images/uploadImageBg.png"
+                              file={field.value}
+                              initialPreviewUrl={watch("videoPreview")}
+                              onFileChange={field.onChange}
+                            />
+                            {fieldState.invalid && (
+                              <p className="text-red-500 text-sm mt-1">{fieldState.error?.message}</p>
+                            )}
+                          </>
                         )}
                       />
                     </div>
@@ -234,15 +241,21 @@ export function LessonsClientPage() {
                         <Controller
                           control={control}
                           name="videoPlaceholder"
-                          render={({ field }) => (
-                            <FileUploader
-                              id="videoPlaceholder"
-                              type="image"
-                              bg="/images/uploadImageBg.png"
-                              file={field.value}
-                              initialPreviewUrl={watch("videoPlaceholderPreview")}
-                              onFileChange={field.onChange}
-                            />
+                          rules={{ required: "Video Placeholder is required" }}
+                          render={({ field, fieldState }) => (
+                            <>
+                              <FileUploader
+                                id="videoPlaceholder"
+                                type="image"
+                                bg="/images/uploadImageBg.png"
+                                file={field.value}
+                                initialPreviewUrl={watch("videoPlaceholderPreview")}
+                                onFileChange={field.onChange}
+                              />
+                              {fieldState.invalid && (
+                                <p className="text-red-500 text-sm mt-1">{fieldState.error?.message}</p>
+                              )}
+                            </>
                           )}
                         />
                       </div>
@@ -251,7 +264,7 @@ export function LessonsClientPage() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                       <Textarea
-                        {...register("description")}
+                        {...register("description", { required: "Description is required" })}
                         id="description"
                         placeholder="Enter detailed lesson description..."
                         rows={6}

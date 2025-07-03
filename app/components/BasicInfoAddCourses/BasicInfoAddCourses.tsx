@@ -5,6 +5,8 @@ import { useFormContext } from "react-hook-form";
 import { RichEditor } from "../RichEditor/RichEditor";
 import { Backend_Url, Fake_Token, Files_Url } from "../../../constants";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { motion } from "framer-motion";
 
 interface Props {
   setStep: (step: string) => void;
@@ -22,6 +24,7 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
     register,
     setValue,
     reset,
+    clearErrors,
     formState: { errors },
   } = useFormContext();
 
@@ -87,22 +90,69 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
     <div className="bg-white rounded shadow p-5 pt-2 ps-2">
       <p className="font-semibold">Basic Info</p>
 
-      <div className="my-2 min-h-[190px]">
+      <div className="my-2 min-h-[190px] relative">
         <div className="flex justify-between">
           <p className="text-sm">Cover image</p>
-          <button
+          <motion.button
             type="button"
             disabled={disabled}
             onClick={() => inputRef.current?.click()}
             className="rounded transition-colors cursor-pointer text-[#7337FF] text-sm"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Click to Change
-          </button>
+          </motion.button>
         </div>
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 grow">
           <input type="file" accept="image/*" onChange={handleImageChange} ref={inputRef} className="hidden" />
-          {image && (
-            <img src={image} alt="Uploaded Preview" className="w-full h-48 object-cover rounded-lg shadow-md border" />
+          {image ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-full h-48"
+            >
+              <motion.img
+                src={image}
+                alt="Uploaded Preview"
+                className="w-full h-full object-cover rounded-lg shadow-md border"
+                whileHover={{ scale: 1.01 }}
+                layoutId="course-cover-image"
+              />
+              {/* <motion.div className="absolute inset-0  rounded-lg" /> */}
+            </motion.div>
+          ) : (
+            <motion.div
+              className="relative w-full h-48 overflow-hidden rounded-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.img
+                src="/images/uploadImageBg.png"
+                alt="background"
+                className="absolute w-full h-full object-cover"
+                initial={{ scale: 1 }}
+                animate={{ scale: 1.02 }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "linear",
+                }}
+              />
+              <motion.div
+                className="absolute inset-0 z-10 bg-[#ffffffbc] flex items-center justify-center"
+                whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}
+                transition={{ duration: 0.2 }}
+                onClick={() => inputRef.current?.click()}
+              >
+                <div className="text-center p-4">
+                  <Image src="/images/uploadLayer.svg" alt="overlay" width={800} height={400} className="mx-auto " />
+                </div>
+              </motion.div>
+            </motion.div>
           )}
         </div>
       </div>
@@ -115,7 +165,8 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
           id="Name"
           type="text"
           disabled={disabled}
-          {...register("Name", { required: "Course name is required" })}
+          
+          {...register("Name", { required: "Course name is required" , onChange: () => clearErrors("Name")})}
           placeholder="Enter your course name"
           className={`px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 ${
             disabled ? "bg-gray-100" : "bg-white"

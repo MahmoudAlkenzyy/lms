@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import { useFormContext } from "react-hook-form";
@@ -19,7 +19,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
     formState: { errors },
   } = useFormContext();
 
-  const selectedTagIds: string[] = watch("courseTags") || [];
+  const selectedTagIds: string[] = watch("coursesTags") || [];
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,15 +37,13 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
         });
 
         const json = await response.json();
-        // console.log({ tags: json });
-
         if (json.isSuccess && json.tags?.items) {
           setAvailableTags(json.tags.items);
         } else {
           setError("Failed to load tags");
         }
       } catch (err) {
-        console.error("  Error fetching tags:", err);
+        console.error("Error fetching tags:", err);
         setError("Network error");
       } finally {
         setLoading(false);
@@ -63,18 +61,18 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
 
     if (!selectedTagIds.includes(tag.id)) {
       const updated = [...selectedTagIds, tag.id];
-      setValue("courseTags", updated, { shouldValidate: true });
-      setError(""); // clear error if user is back under limit
+      setValue("coursesTags", updated, { shouldValidate: true });
+      setError(""); // clear error
     }
   };
 
   const removeTag = (id: string) => {
     const updated = selectedTagIds.filter((tagId) => tagId !== id);
-    setValue("courseTags", updated, { shouldValidate: true });
+    setValue("coursesTags", updated, { shouldValidate: true });
   };
 
   useEffect(() => {
-    register("courseTags", { required: "At least one tag is required" });
+    register("coursesTags", { required: "At least one tag is required" });
   }, [register]);
 
   return (
@@ -98,28 +96,31 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
             disabled={disabled}
             placeholder="Search and select a tag"
             onChange={(e) => {
-              const selectedName = e.target.value;
+              const selectedName = e.target.value.trim();
               const tag = availableTags.find((t) => t.name.toLowerCase() === selectedName.toLowerCase());
               if (tag) {
                 addTag(tag);
                 e.target.value = "";
               }
             }}
-            className={`w-full p-2 border mt-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500
-    ${disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"}
-  `}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.preventDefault();
+            }}
+            className={`w-full p-2 border mt-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 ${
+              disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"
+            }`}
           />
-          {selectedTagIds.length >= 10 && <p className="text-yellow-600 text-sm">Maximum of 10 tags allowed</p>}
-
           <datalist id="tags-list">
             {availableTags.map((tag) => (
               <option key={tag.id} value={tag.name} />
             ))}
           </datalist>
+
+          {selectedTagIds.length >= 10 && <p className="text-yellow-600 text-sm">Maximum of 10 tags allowed</p>}
         </>
       )}
 
-      {errors.courseTags && <span className="text-red-500 text-sm">{errors.courseTags.message as string}</span>}
+      {errors.coursesTags && <span className="text-red-500 text-sm">{errors.coursesTags.message as string}</span>}
 
       <div className="flex flex-wrap gap-2 mt-2">
         {selectedTagIds.map((id) => {
@@ -129,7 +130,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
           return (
             <div key={id} className="flex items-center gap-1 px-3 py-1 text-sm bg-black text-white rounded">
               <span>{tag.name}</span>
-              <button disabled={disabled} onClick={() => removeTag(id)} className="text-violet-600 hover:text-red-500">
+              <button disabled={disabled} onClick={() => removeTag(id)} className="text-white hover:text-red-300">
                 <IoClose className="w-4 h-4" />
               </button>
             </div>

@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import { parseISO, isAfter, isBefore, format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
-
+import * as Tooltip from "@radix-ui/react-tooltip";
 const ITEMS_PER_PAGE = 6;
 
 const CoursesTable = () => {
@@ -175,7 +175,26 @@ const CoursesTable = () => {
                       ""
                     )}
                   </td>
-                  <td className="px-4 ps-0 py-2 text-start max-w-32">{course.name}</td>
+                  <td className="px-4 ps-0 py-2 text-start max-w-32">
+                    {" "}
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <span className="cursor-default line-clamp-1">{truncateWords(course.name)}</span>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            className="z-50 rounded bg-gray-800 px-3 py-1 text-sm text-white shadow"
+                            sideOffset={5}
+                          >
+                            {course.name}
+                            <Tooltip.Arrow className="fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </td>
                   <td className="px-4 py-2">{course.code || "—"}</td>
                   <td className="px-4 py-2">{course.instructors?.join(", ") || "—"}</td>
                   <td className="px-4 py-2">{course.lessonsCount || 0}</td>
@@ -271,3 +290,8 @@ const CustomDateButton = React.forwardRef(
   )
 );
 CustomDateButton.displayName = "CustomDateButton";
+function truncateWords(text: string, wordLimit = 4): string {
+  const words = text.split(" ");
+  if (words.length <= wordLimit) return text;
+  return words.slice(0, wordLimit).join(" ") + " ...";
+}

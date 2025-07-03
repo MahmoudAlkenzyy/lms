@@ -128,9 +128,9 @@ const LessonsTable = () => {
             Preview
           </button>
 
-          <button className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors duration-200 cursor-pointer">
+          {/* <button className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors duration-200 cursor-pointer">
             Save to draft
-          </button>
+          </button> */}
         </div>
       </div>
       <div className="flex flex-col gap-3 mt-5 mx-3 mb-3">

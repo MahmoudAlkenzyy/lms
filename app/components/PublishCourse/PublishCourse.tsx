@@ -5,7 +5,12 @@ import { Backend_Url, Fake_Token, Files_Url } from "@/constants";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GrLanguage } from "react-icons/gr";
+import { MdOutlineCloudDownload } from "react-icons/md";
+import { PiWarningOctagonLight } from "react-icons/pi";
 import CurriculumBarPreview from "../CurriculumPublish/CurriculumPublish";
+import { IoVideocamOutline } from "react-icons/io5";
+import { CiMobile2 } from "react-icons/ci";
+import { FaGraduationCap } from "react-icons/fa";
 interface StaffMember {
   id: string;
   name: string;
@@ -129,9 +134,9 @@ const PublishCourse = () => {
               <div className="mt-4">
                 <div className="flex flex-wrap gap-4">
                   {staff?.instructors.map((instr) => (
-                    <div key={instr.id} className="flex items-center gap-2 bg-[#faf7ff] px-3 py-2 rounded-md">
-                      <div className="w-8 h-8   flex items-center justify-center font-semibold">
-                        <img className="w-8 h-8 rounded-lg" src={"/images/avatar.png"} />
+                    <div key={instr.id} className="flex items-center gap-2 b px-3 py-2 rounded-md">
+                      <div className="w-10 h-10 flex items-center justify-center font-semibold">
+                        <img className="w-10 h-10 rounded-lg" src={"/images/avatar.png"} />
                       </div>
                       <span className="text-sm text-gray-800">{instr.name}</span>
                     </div>
@@ -146,21 +151,26 @@ const PublishCourse = () => {
                   ))} */}
                 </div>
               </div>
-
-              {Array.isArray(metaData?.coursesLanguages) && metaData.coursesLanguages.length > 0 && (
-                <div className="mt-4 flex gap-2 items-center">
-                  <h3 className="text-md font-semibold text-gray-800 ">
-                    <GrLanguage />
-                  </h3>
-                  <div className="flex gap-2 flex-wrap">
-                    {metaData.coursesLanguages.map((lang) => (
-                      <span key={lang.id} className="bg-[#7337FF26] text-[#7337FF] text-xs px-3 py-1 rounded-full">
-                        {lang.name}
-                      </span>
-                    ))}
-                  </div>
+              <div className="text-[#000000A6] flex  items-center gap-7">
+                <div className="flex gap-2 items-center">
+                  <PiWarningOctagonLight size={21} className="text-[#7337FF]" />
+                  <p>Last updated 2/2025</p>
                 </div>
-              )}
+                {Array.isArray(metaData?.coursesLanguages) && metaData.coursesLanguages.length > 0 && (
+                  <div className=" flex  items-center">
+                    <h3 className="text-md font-semibold text-gray-800 ">
+                      <GrLanguage size={18} className="text-[#7337FF]" />
+                    </h3>
+                    <div className="flex gap-2 flex-wrap">
+                      {metaData.coursesLanguages.map((lang) => (
+                        <span key={lang.id} className=" text-xs px-3 py-1 rounded-full">
+                          {lang.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm space-y-4">
               <h2 className="text-2xl font-semibold">What you’ll learn</h2>
@@ -182,11 +192,22 @@ const PublishCourse = () => {
                 src={"/images/VideoPlay.png"}
               />
               <div className="w-full bg-[#7337FF] text-white p-3 rounded-lg hover:bg-[#7337FF99] text-center">
-                {" "}
                 Enroll now
               </div>
-              <div className="w-full text-lg font-semibold">
-                <h3>This course includes:</h3>
+              <div className="w-full text-[#000000CC] flex flex-col gap-4 ">
+                <h3 className="text-lg font-semibold text-black">This course includes:</h3>
+                <p className="flex gap-2 items-center">
+                  <IoVideocamOutline size={24} /> hours on demand video
+                </p>
+                <p className="flex gap-2 items-center">
+                  <MdOutlineCloudDownload size={24} /> Downloadable resources
+                </p>
+                <p className="flex gap-2 items-center">
+                  <CiMobile2 size={24} /> Access on mobile and TV
+                </p>
+                <p className="flex gap-2 items-center">
+                  <FaGraduationCap size={24} /> Certificate of completion
+                </p>
               </div>
             </div>
           </div>

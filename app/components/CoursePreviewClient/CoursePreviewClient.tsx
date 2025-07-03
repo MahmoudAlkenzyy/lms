@@ -171,18 +171,6 @@ export function LessonsPreviewPageClient() {
                     <p className="text-gray-700 mt-3 whitespace-pre-line leading-relaxed">{lessonData.description}</p>
                   </motion.div>
                 )}
-
-                {lessonData.intro && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="mt-4 p-4   border-t border-gray-200"
-                  >
-                    <h3 className="font-medium  mb-2">Introduction</h3>
-                    <p className="text-blue-700 whitespace-pre-line">{lessonData.intro}</p>
-                  </motion.div>
-                )}
               </div>
 
               {lessonData.itemImages?.length > 0 && (
