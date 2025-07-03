@@ -37,6 +37,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
         });
 
         const json = await response.json();
+        // console.log({ tags: json });
 
         if (json.isSuccess && json.tags?.items) {
           setAvailableTags(json.tags.items);
@@ -128,7 +129,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
           return (
             <div key={id} className="flex items-center gap-1 px-3 py-1 text-sm bg-black text-white rounded">
               <span>{tag.name}</span>
-              <button onClick={() => removeTag(id)} className="text-violet-600 hover:text-red-500">
+              <button disabled={disabled} onClick={() => removeTag(id)} className="text-violet-600 hover:text-red-500">
                 <IoClose className="w-4 h-4" />
               </button>
             </div>

@@ -5,6 +5,7 @@ import { Backend_Url, Fake_Token } from "@/constants";
 import { ChevronDownIcon, ChevronUpIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { FaRegFileAlt, FaRegPlayCircle } from "react-icons/fa";
+import { parse } from "date-fns";
 
 interface Lesson {
   id: string;
@@ -78,11 +79,17 @@ export default function CurriculumBar({
     setExpandedChapterId((prev) => (prev === id ? null : id));
   };
 
-  const formatDuration = (duration?: number) => {
-    if (!duration) return "N/A";
-    return duration < 60 ? `${duration} min` : `${Math.floor(duration / 60)}h ${duration % 60}m`;
-  };
+  function durationToMinutes(duration: string): string {
+    if (!duration || duration === "00:00:00") return "N/A";
 
+    const parsed = parse(duration, "HH:mm:ss", new Date());
+    const hours = parsed.getHours();
+    const minutes = parsed.getMinutes();
+
+    const totalMinutes = hours * 60 + minutes;
+
+    return `${totalMinutes} min`;
+  }
   return (
     <div className="flex flex-col gap-4 p-5 bg-white border border-gray-200 shadow-sm rounded-xl">
       <div className="flex justify-between items-center">
@@ -195,11 +202,13 @@ export default function CurriculumBar({
                           >
                             <div className="flex items-center gap-3">
                               {lesson.lessonType == "Attachment" ? (
-                                <FaRegFileAlt className={`h-5 w-5 ${isActive ? "text-[#00B087]" : "text-gray-500"}`} />
+                                <div className="h-5 w-5">
+                                  <FaRegFileAlt className={` ${isActive ? "text-[#00B087]" : "text-gray-500"}`} />
+                                </div>
                               ) : (
-                                <FaRegPlayCircle
-                                  className={`h-5 w-5 ${isActive ? "text-[#00B087]" : "text-gray-500"}`}
-                                />
+                                <div className="h-5 w-5">
+                                  <FaRegPlayCircle className={` ${isActive ? "text-[#00B087]" : "text-gray-500"}`} />
+                                </div>
                               )}
 
                               <span className={`text-sm ${isActive ? "font-medium text-[#00B087]" : "text-gray-700"}`}>
@@ -210,11 +219,11 @@ export default function CurriculumBar({
                               <Tooltip.Root>
                                 <Tooltip.Trigger asChild>
                                   <span
-                                    className={`text-xs px-2 py-1 rounded ${
+                                    className={`text-xs px-2 py-1 rounded text-nowrap ${
                                       isActive ? "bg-indigo-200 text-indigo-800" : "bg-gray-100 text-gray-600"
                                     }`}
                                   >
-                                    {formatDuration(lesson.duration)}
+                                    {durationToMinutes(lesson.duration?.toString() || "")}
                                   </span>
                                 </Tooltip.Trigger>
                                 <Tooltip.Content

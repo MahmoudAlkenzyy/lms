@@ -6,6 +6,7 @@ import NavBar from "./components/NavBar/NavBar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-datepicker/dist/react-datepicker.css";
+import RouteChangeLoading from "./components/RouteChangeLoading/RouteChangeLoading";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,13 +31,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="flex h-screen ">
-          {/* <div className=" h-full"> */}
           <Sidebar />
-          {/* </div> */}
 
-          <div className="flex-1  grow overflow-auto   bg-[#faf7ff]">
+          <div className="flex-1 relative  grow overflow-auto   bg-[#faf7ff]">
             <NavBar />
             {children}
+            <RouteChangeLoading />
             <ToastContainer position="top-right" autoClose={3000} />
           </div>
         </div>

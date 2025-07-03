@@ -1,12 +1,12 @@
 import { Suspense } from "react";
-import { LessonsPreviewPageClient } from "../components/CoursePreviewClient/CoursePreviewClient";
+import PublishCourse from "../components/PublishCourse/PublishCourse";
 import RouteChangeLoading from "../components/RouteChangeLoading/RouteChangeLoading";
 
 export default function Page() {
   return (
     <div>
       <Suspense fallback={<RouteChangeLoading />}>
-        <LessonsPreviewPageClient />
+        <PublishCourse />
       </Suspense>
     </div>
   );

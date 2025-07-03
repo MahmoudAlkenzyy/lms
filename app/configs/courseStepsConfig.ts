@@ -69,7 +69,8 @@ export const createStepConfigs = (
         });
 
         const result = await res.json();
-        if (!result.isSuccess) throw new Error(result.message || "Failed to save metadata");
+        // console.log({ result });
+        if (!result.isSuccess) throw new Error(result.message || result.errors[0] || "Failed to save metadata");
 
         setStep(result.status);
       },

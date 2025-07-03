@@ -50,9 +50,9 @@ export default function AddCoursePageClient() {
             autoClose: 3000,
           });
         } catch (err) {
-          console.error("  Submission error:", err);
+          console.error(err);
           toast.update(toastId, {
-            render: "  Error saving data",
+            render: err ? `${err}` : "  Error saving data",
             type: "error",
             isLoading: false,
             autoClose: 3000,

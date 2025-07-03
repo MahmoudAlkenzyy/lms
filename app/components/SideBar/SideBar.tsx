@@ -18,7 +18,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
 const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
 

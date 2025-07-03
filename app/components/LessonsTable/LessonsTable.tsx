@@ -119,7 +119,7 @@ const LessonsTable = () => {
         <div className="flex gap-4 items-center ms-auto  justify-end ">
           <button
             type="button"
-            onClick={() => router.push(`/CoursePreview?courseid=${CourseId}&chapterid=${chapterId}`)}
+            onClick={() => router.push(`/CoursePreviewPublish?courseid=${CourseId}`)}
             className={`${
               lessons.length == 0 && "!opacity-50 !cursor-not-allowed"
             } px-6 py-1 text-sm text-gray-600 bg-white border border-gray-400 rounded hover:bg-gray-100 transition-colors duration-200 cursor-pointer`}

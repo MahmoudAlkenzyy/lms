@@ -68,7 +68,7 @@ export default function FileUploader({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className="relative w-full h-64 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer"
-        onClick={handleClick}
+        onClick={() => (previewUrl ? undefined : handleClick())}
       >
         {!previewUrl ? (
           <>

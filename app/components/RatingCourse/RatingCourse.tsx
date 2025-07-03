@@ -33,10 +33,10 @@ const RatingCourse = ({ disabled }: { disabled: boolean }) => {
           type="button"
           disabled={disabled}
           onClick={toggleRating}
-          className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${
-            isRatingEnabled && !disabled ? "opacity-50 cursor-not-allowed" : ""
-          }"
-          }`}
+          className={`w-12 h-6 rounded-full relative transition-colors duration-300 bg-gray-300 
+          
+           ${isRatingEnabled ? "bg-violet-600" : "bg-gray-300"} ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+          `}
         >
           <span
             className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 ${

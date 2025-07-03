@@ -82,7 +82,6 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
 
     fetchCourseById();
   }, [courseIdFromURL]);
-  console.log({ errors });
 
   return (
     <div className="bg-white rounded shadow p-5 pt-2 ps-2">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,7 @@ export function LessonsClientPage() {
   const searchParams = useSearchParams();
   const courseId = searchParams.get("courseid");
   const lessonId = searchParams.get("lessonid");
+  const router = useRouter();
 
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
@@ -144,23 +145,32 @@ export function LessonsClientPage() {
           <h2 className="text-xl font-semibold">Add lesson items</h2>
           <p className="text-sm text-gray-300">{activeLessonId ? "Editing lesson" : "Select a lesson "}</p>
         </div>
-        <button
-          type="submit"
-          disabled={isSubmitting || !activeLessonId}
-          className="px-6 py-2 text-sm flex items-center gap-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors"
-        >
-          {isSubmitting ? (
-            <>
-              <FiLoader className="animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <FiSave />
-              Save
-            </>
-          )}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => router.push(`/CoursePreviewPublish?courseid=${courseId}`)}
+            className={` px-6 py-2 text-sm text-gray-600 bg-white border border-gray-400 rounded hover:bg-gray-100 transition-colors duration-200 cursor-pointer`}
+          >
+            Preview
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting || !activeLessonId}
+            className="px-6 py-2 text-sm flex items-center gap-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors"
+          >
+            {isSubmitting ? (
+              <>
+                <FiLoader className="animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <FiSave />
+                Save
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row mt-4 gap-6 mx-4">
