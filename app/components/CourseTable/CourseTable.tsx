@@ -10,6 +10,7 @@ import DatePicker from "react-datepicker";
 import { parseISO, isAfter, isBefore, format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import Link from "next/link";
 const ITEMS_PER_PAGE = 6;
 
 const CoursesTable = () => {
@@ -21,7 +22,6 @@ const CoursesTable = () => {
   const [selectedCourseName, setSelectedCourseName] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Date range picker state
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [startDate, endDate] = dateRange;
 
@@ -169,7 +169,11 @@ const CoursesTable = () => {
             </thead>
             <tbody>
               {paginatedCourses.map((course) => (
-                <tr key={course.id} className="border-b text-center border-[#00000021] hover:bg-gray-50 transition">
+                <tr
+                  onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)}
+                  key={course.id}
+                  className="border-b text-center border-[#00000021] hover:bg-gray-50 transition"
+                >
                   <td className="px-4  py-2 bg ">
                     {course.coverImage ? (
                       <img
@@ -212,12 +216,12 @@ const CoursesTable = () => {
                   </td>
                   <td className="px-4 py-2 flex items-center justify-center gap-3 text-lg text-gray-500">
                     <div className="bg-[#7337FF1A] rounded flex gap-2 p-2">
-                      <button
+                      {/* <button
                         onClick={() => router.push(`/CoursePreview?courseid=${course.id}`)}
                         className="text-violet-600 cursor-pointer"
                       >
                         <FaRegEye />
-                      </button>
+                      </button> */}
                       <button
                         className="text-green-600 cursor-pointer"
                         onClick={() => router.push(`/Course?id=${course.id}`)}

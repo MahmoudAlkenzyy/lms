@@ -116,7 +116,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
             ))}
           </datalist>
 
-          {selectedTagIds.length >= 10 && <p className="text-yellow-600 text-sm">Maximum of 10 tags allowed</p>}
+          {selectedTagIds.length > 10 && <p className="text-yellow-600 text-sm">Maximum of 10 tags allowed</p>}
         </>
       )}
 

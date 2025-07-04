@@ -22,7 +22,7 @@ const LessonsTable = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
-
+  const [chapterName, setChapterName] = useState();
   const searchParams = useSearchParams();
   const chapterId = searchParams.get("chapterid");
   const CourseId = searchParams.get("courseid");
@@ -33,45 +33,42 @@ const LessonsTable = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${Backend_Url}/Lessons/GetLessons`, {
-        method: "POST",
+      const res = await fetch(`${Backend_Url}/Chapters/GetChapter?ChapterId=${chapterId}`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: Fake_Token,
           Accept: "text/plain",
+          Authorization: Fake_Token,
         },
-        body: JSON.stringify({ chapterId }),
       });
 
       const data = await res.json();
-      if (data.isSuccess && Array.isArray(data.lessons)) {
-        const mappedLessons = data.lessons.map((lesson: any) => {
-          const rawType = lesson.type;
-          let normalizedType: "Video" | "Attachment";
+      setChapterName(data.chapter.name);
+      console.log(data.chapter.lessons);
+      if (data.isSuccess && Array.isArray(data.chapter.lessons)) {
+        const mappedLessons = data.chapter.lessons.map((lesson: any) => {
+          let normalizedType: "Video" | "Attachment" = "Video";
 
-          if (typeof rawType === "string") {
-            const typeLower = rawType.toLowerCase();
-            normalizedType = typeLower === "attachment" ? "Attachment" : "Video";
-          } else if (typeof rawType === "number") {
-            normalizedType = rawType === 1 ? "Attachment" : "Video";
-          } else {
-            normalizedType = "Video";
+          if (typeof lesson.lessonType === "string") {
+            normalizedType = lesson.lessonType.toLowerCase() === "attachment" ? "Attachment" : "Video";
+          } else if (typeof lesson.lessonType === "number") {
+            normalizedType = lesson.lessonType === 1 ? "Attachment" : "Video";
           }
 
           return {
             id: lesson.id,
             name: lesson.name,
-            type: normalizedType,
-            duration: lesson.duration || "N/A",
+            lessonType: normalizedType,
+            duration: lesson.duration || "00:00:00",
           };
         });
 
         setLessons(mappedLessons);
       } else {
-        console.warn("  No lessons found or unexpected format");
+        console.warn("Unexpected data format or no lessons returned.");
       }
     } catch (err) {
-      console.error("  Failed to fetch lessons", err);
+      console.error("Failed to fetch lessons:", err);
     } finally {
       setLoading(false);
     }
@@ -107,10 +104,10 @@ const LessonsTable = () => {
   return (
     <div className="">
       <div className="py-2 px-4 sticky pb-3  -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
-        <CiTextAlignLeft />
+        {/* <CiTextAlignLeft /> */}
         <div className="">
-          <h2 className="text-xl">Add Courses</h2>
-          <p className="text-xs text-[#FFFFFFB0]">let's check your update today.</p>
+          <h2 className="text-3xl pb-3">{chapterName || "Add Courses"}</h2>
+          <p className="text-xs text-[#FFFFFFB0]">Add and customize lessons.</p>
         </div>
 
         <div className="flex gap-4 items-center ms-auto  justify-end ">

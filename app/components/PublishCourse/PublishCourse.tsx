@@ -10,7 +10,7 @@ import { PiWarningOctagonLight } from "react-icons/pi";
 import CurriculumBarPreview from "../CurriculumPublish/CurriculumPublish";
 import { IoVideocamOutline } from "react-icons/io5";
 import { CiMobile2 } from "react-icons/ci";
-import { FaGraduationCap } from "react-icons/fa";
+import { FaEdit, FaGraduationCap } from "react-icons/fa";
 import { toast } from "react-toastify";
 interface StaffMember {
   id: string;
@@ -137,13 +137,22 @@ const PublishCourse = () => {
             <h2 className="text-2xl">View Course</h2>
             <p className="text-[#FFFFFFB0]">Let’s check your update today.</p>
           </div>
-          <button
-            type="button"
-            onClick={handlePublish}
-            className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded transition-colors duration-200 cursor-pointer"
-          >
-            Publish
-          </button>
+          <div className=" flex gap-5">
+            <button
+              type="button"
+              onClick={() => router.push(`/Course?id=${courseId}`)}
+              className="px-6 py-1 text-sm text-black flex gap-2 items-center bg-white rounded transition-colors duration-200 cursor-pointer"
+            >
+              edit
+            </button>
+            <button
+              type="button"
+              onClick={handlePublish}
+              className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded transition-colors duration-200 cursor-pointer"
+            >
+              Publish
+            </button>
+          </div>
         </div>
       </div>
       <div className=" p-6 px-4">

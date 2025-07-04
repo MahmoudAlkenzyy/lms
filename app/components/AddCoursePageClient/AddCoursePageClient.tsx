@@ -70,7 +70,6 @@ export default function AddCoursePageClient() {
           <h2 className="text-xl">Add Courses</h2>
           <p className="text-xs text-[#FFFFFFB0]">let's check your update today.</p>
         </div>
-     
 
         <button
           type="button"
@@ -97,7 +96,10 @@ export default function AddCoursePageClient() {
 
           <FormProvider {...contentForm}>
             <form>
-              <ContentAddCourses id={courseId} disabled={step !== "Draft-StaffInfo" && step !== "Draft"} />
+              <ContentAddCourses
+                id={courseId}
+                disabled={step !== "Draft-StaffInfo" && step !== "Draft" && step !== "Published"}
+              />
             </form>
           </FormProvider>
         </div>
