@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Backend_Url, Fake_Token } from "@/constants";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
@@ -22,8 +22,11 @@ interface Chapter {
   name: string;
   lessons: Lesson[];
 }
-
-export default function CurriculumBarPreview() {
+interface props {
+  setVideoDuration: Dispatch<SetStateAction<string>>;
+  setAttachmentCount: Dispatch<SetStateAction<number>>;
+}
+export default function CurriculumBarPreview({ setAttachmentCount, setVideoDuration }: props) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [expandedChapterId, setExpandedChapterId] = useState<string | null>(null);
   const [totalDuration, setTotalDuration] = useState<string>("00h 00m");
@@ -44,12 +47,20 @@ export default function CurriculumBarPreview() {
 
       const data = await res.json();
       if (data.isSuccess) {
-        setChapters(data.chapters.items);
-        if (data.chapters.items.length > 0) {
-          setExpandedChapterId(data.chapters.items[0].id);
+        const chapterItems = data.chapters.items;
+        setChapters(chapterItems);
+        if (chapterItems.length > 0) {
+          setExpandedChapterId(chapterItems[0].id);
         }
-        const total = calculateTotalDuration(data.chapters.items);
+
+        const total = calculateTotalDuration(chapterItems);
         setTotalDuration(formatDuration(total));
+
+        const attachments = countAttachments(chapterItems);
+        setAttachmentCount(attachments);
+
+        const videoOnlyMinutes = calculateVideoDuration(chapterItems);
+        setVideoDuration(formatDuration(videoOnlyMinutes));
       }
     };
 
@@ -66,13 +77,10 @@ export default function CurriculumBarPreview() {
 
   function durationToMinutes(duration: string): string {
     if (!duration || duration === "00:00:00") return "N/A";
-
     const parsed = parse(duration, "HH:mm:ss", new Date());
     const hours = parsed.getHours();
     const minutes = parsed.getMinutes();
-
     const totalMinutes = hours * 60 + minutes;
-
     return `${totalMinutes} min`;
   }
 
@@ -86,7 +94,30 @@ export default function CurriculumBarPreview() {
         }
       });
     });
-    return Math.floor(totalSeconds / 60); // total minutes
+    return Math.floor(totalSeconds / 60);
+  }
+
+  function calculateVideoDuration(chapters: Chapter[]): number {
+    let totalSeconds = 0;
+    chapters.forEach((chapter) => {
+      chapter.lessons?.forEach((lesson) => {
+        if (lesson.lessonType === "Video" && lesson.duration) {
+          const [hh, mm, ss] = lesson.duration.split(":").map(Number);
+          totalSeconds += hh * 3600 + mm * 60 + ss;
+        }
+      });
+    });
+    return Math.floor(totalSeconds / 60);
+  }
+
+  function countAttachments(chapters: Chapter[]): number {
+    let count = 0;
+    chapters.forEach((chapter) => {
+      chapter.lessons?.forEach((lesson) => {
+        if (lesson.lessonType === "Attachment") count++;
+      });
+    });
+    return count;
   }
 
   function formatDuration(totalMinutes: number): string {
@@ -98,7 +129,8 @@ export default function CurriculumBarPreview() {
   return (
     <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 space-y-4">
       <h2 className="font-bold text-xl text-gray-800">Curriculum</h2>
-      <div className="text-sm text-gray-600 flex gap-5 flex-wrap">
+
+      <div className="text-sm text-gray-600 flex gap-4 flex-wrap">
         <span className="flex gap-1 items-center">
           <HiOutlineBookOpen size={19} /> <strong>{chapters.length}</strong>{" "}
           {chapters.length === 1 ? "Section" : "Sections"}
@@ -106,8 +138,9 @@ export default function CurriculumBarPreview() {
         <span className="flex gap-1 items-center">
           <FaRegFileAlt size={16} /> <strong>{chapters.reduce((acc, c) => acc + c.lessons.length, 0)}</strong> Lessons
         </span>
+
         <span className="flex gap-1 items-center">
-          <IoMdTime size={19} /> <strong>{totalDuration}</strong> Duration
+          <IoMdTime size={19} /> <strong>{totalDuration}</strong> Total Duration
         </span>
       </div>
 

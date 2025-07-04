@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import CurriculumBar from "@/app/components/CurriculumBar/CurriculumBar";
 import { Backend_Url, Fake_Token, Files_Url } from "@/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import FileUploader from "../FileUploader/FileUploader";
 
@@ -24,7 +23,7 @@ export function LessonsPreviewPageClient() {
   const [videoProgress, setVideoProgress] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isPdf, setIsPdf] = useState(true);
-
+  const router = useRouter();
   const fetchLessonData = async (id: string) => {
     setIsLoading(true);
     setError(null);
@@ -142,6 +141,7 @@ export function LessonsPreviewPageClient() {
                       type={lessonData.type === "Attachment" ? "pdf" : "video"}
                       bg="/images/uploadImageBg.png"
                       file={null}
+                      isPreview={true}
                       initialPreviewUrl={`${Files_Url}${lessonData.video}`}
                       onFileChange={() => {}}
                     />
@@ -152,6 +152,7 @@ export function LessonsPreviewPageClient() {
                         type="image"
                         bg="/images/uploadImageBg.png"
                         file={null}
+                        isPreview={true}
                         initialPreviewUrl={`${Files_Url}${lessonData.videoPlaceholder}`}
                         onFileChange={() => {}}
                         // readOnly
@@ -228,6 +229,14 @@ export function LessonsPreviewPageClient() {
       <div className="w-full lg:w-1/3">
         {courseId ? (
           <div className="sticky top-4 space-y-4">
+            <button
+              type="button"
+              onClick={() => router.push(`/CoursePreviewPublish?courseid=${courseId}`)}
+              className={` px-6 py-1 ms-auto block text-sm text-gray-600 bg-white border border-gray-400 rounded hover:bg-gray-100 transition-colors duration-200 cursor-pointer`}
+              //   disabled={lessons.length == 0}
+            >
+              Preview
+            </button>
             <CurriculumBar
               courseId={courseId}
               currentLessonId={lessonId ?? ""}

@@ -51,6 +51,8 @@ const PublishCourse = () => {
   const [basicInfo, setBasicInfo] = useState<CourseBasicInfo | null>(null);
   const [staff, setStaff] = useState<CourseStaff | null>(null);
   const [metaData, setMetaData] = useState<CourseData | null>(null);
+  const [attachmentCount, setAttachmentCount] = useState(0);
+  const [videoDuration, setVideoDuration] = useState("00h 00m");
   const params = useSearchParams();
   const router = useRouter();
   const courseId = params.get("courseid");
@@ -111,15 +113,16 @@ const PublishCourse = () => {
       if (!res.ok) throw new Error("Failed to publish course");
 
       toast.update(toastId, {
-        render: "✅ Course published successfully!",
+        render: " Course published successfully!",
         type: "success",
         isLoading: false,
         autoClose: 3000,
       });
+      router.push("/Courses");
     } catch (err) {
       console.error("Publish error:", err);
       toast.update(toastId, {
-        render: "❌ Failed to publish course",
+        render: " Failed to publish course",
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -215,7 +218,7 @@ const PublishCourse = () => {
                 </div>
               )}
             </div>
-            <CurriculumBarPreview />
+            <CurriculumBarPreview setAttachmentCount={setAttachmentCount} setVideoDuration={setVideoDuration} />
           </div>
           <div className="">
             <div className="bg-white flex flex-col items-center  justify-center p-4 md:p-5 rounded-xl shadow-sm space-y-4">
@@ -232,17 +235,21 @@ const PublishCourse = () => {
               <div className="w-full text-[#000000CC] flex flex-col gap-4 ">
                 <h3 className="text-lg font-semibold text-black">This course includes:</h3>
                 <p className="flex gap-2 items-center">
-                  <IoVideocamOutline size={24} /> hours on demand video
+                  <IoVideocamOutline size={24} />
+                  {videoDuration} hours on demand video
                 </p>
                 <p className="flex gap-2 items-center">
-                  <MdOutlineCloudDownload size={24} /> Downloadable resources
+                  <MdOutlineCloudDownload size={24} />
+                  {attachmentCount} Downloadable resources
                 </p>
                 <p className="flex gap-2 items-center">
                   <CiMobile2 size={24} /> Access on mobile and TV
                 </p>
-                <p className="flex gap-2 items-center">
-                  <FaGraduationCap size={24} /> Certificate of completion
-                </p>
+                {metaData?.hasCertificate && (
+                  <p className="flex gap-2 items-center">
+                    <FaGraduationCap size={24} /> Certificate of completion
+                  </p>
+                )}
               </div>
             </div>
           </div>

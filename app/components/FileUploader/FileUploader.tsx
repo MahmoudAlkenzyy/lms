@@ -11,6 +11,7 @@ interface FileUploaderProps {
   className?: string;
   initialPreviewUrl?: string;
   file?: File | null;
+  isPreview?: boolean;
   onFileChange?: (file: File | null) => void;
 }
 
@@ -19,6 +20,7 @@ export default function FileUploader({
   type,
   bg,
   file,
+  isPreview = false,
   onFileChange,
   className,
   initialPreviewUrl,
@@ -89,7 +91,7 @@ export default function FileUploader({
           {type === "image" ? "JPG, PNG (Max 5MB)" : type === "video" ? "MP4 (Max 50MB)" : "PDF (Max 10MB)"}
         </div> */}
 
-        {previewUrl && (
+        {!isPreview && previewUrl && (
           <div className="flex gap-2">
             <button
               type="button"
