@@ -145,13 +145,16 @@ const PublishCourse = () => {
             >
               Edit
             </button>
-            <button
-              type="button"
-              onClick={handlePublish}
-              className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded transition-colors duration-200 cursor-pointer"
-            >
-              Publish
-            </button>
+
+            {basicInfo?.status !== "Published" && (
+              <button
+                type="button"
+                onClick={handlePublish}
+                className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded transition-colors duration-200 cursor-pointer"
+              >
+                Publish
+              </button>
+            )}
           </div>
         </div>
       </div>

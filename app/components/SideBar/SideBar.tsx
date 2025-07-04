@@ -53,7 +53,7 @@ const Sidebar = () => {
       animate={{ width: collapsed ? 80 : 256 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <div className="flex items-center justify-between p-4 border-b border-gray-700 overflow-hidden">
+      <div className="flex items-center justify-center p-4 border-b border-gray-700 overflow-hidden">
         {/* <div className="flex items-center justify-between p-4 border-b border-gray-800"> */}
         <motion.div
           className="cursor-pointer"
@@ -61,8 +61,12 @@ const Sidebar = () => {
           //   whileTap={{ scale: 0.95 }}
           onClick={toggleSidebar}
         >
-          <div className="ps-2">
-            <motion.div className="overflow-hidden" initial={{ width: 38 }} animate={{ width: collapsed ? 38 : 150 }}>
+          <div className=" mx-auto w-fit">
+            <motion.div
+              className="overflow-hidden"
+              initial={{ width: 38 }}
+              animate={{ width: collapsed ? 38 : "auto" }}
+            >
               <Image
                 src="/images/fullLogo.png"
                 alt="logo"
