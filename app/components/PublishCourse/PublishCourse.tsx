@@ -11,6 +11,7 @@ import CurriculumBarPreview from "../CurriculumPublish/CurriculumPublish";
 import { IoVideocamOutline } from "react-icons/io5";
 import { CiMobile2 } from "react-icons/ci";
 import { FaGraduationCap } from "react-icons/fa";
+import { toast } from "react-toastify";
 interface StaffMember {
   id: string;
   name: string;
@@ -91,7 +92,40 @@ const PublishCourse = () => {
 
     fetchAll();
   }, []);
+  const handlePublish = async () => {
+    if (!courseId) return toast.error("Missing course ID");
 
+    const toastId = toast.loading("Publishing course...");
+
+    try {
+      const res = await fetch(`${Backend_Url}/Courses/PublishCourse`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/plain",
+          Authorization: Fake_Token,
+        },
+        body: JSON.stringify({ courseId }),
+      });
+
+      if (!res.ok) throw new Error("Failed to publish course");
+
+      toast.update(toastId, {
+        render: "✅ Course published successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } catch (err) {
+      console.error("Publish error:", err);
+      toast.update(toastId, {
+        render: "❌ Failed to publish course",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+  };
   return (
     <div className="min-h-screen bg-[#faf7ff] ">
       <div className="py-2 px-4 sticky  -top-[1px] z-50 bg-black pb-5 text-white rounded-b-lg justify-start gap-3">
@@ -102,7 +136,8 @@ const PublishCourse = () => {
           </div>
           <button
             type="button"
-            className={`px-6 py-1 text-sm text-white bg-[#7337FF]   rounded  transition-colors duration-200 cursor-pointer`}
+            onClick={handlePublish}
+            className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded transition-colors duration-200 cursor-pointer"
           >
             Publish
           </button>

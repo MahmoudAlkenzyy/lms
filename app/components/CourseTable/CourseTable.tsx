@@ -42,7 +42,12 @@ const CoursesTable = () => {
 
       const data = await response.json();
       if (data.isSuccess) {
-        setCourses(data.courses.items);
+        const sortedCourses = [...data.courses.items].sort((a, b) => {
+          const dateA = new Date(a.createdDate).getTime();
+          const dateB = new Date(b.createdDate).getTime();
+          return dateB - dateA; // Newest to oldest
+        });
+        setCourses(sortedCourses);
       } else {
         console.error("API Error:", data.errors);
       }

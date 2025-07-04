@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Backend_Url, Fake_Token } from "@/constants";
+import { useSearchParams } from "next/navigation";
 
 interface Person {
   id: string;
@@ -25,6 +26,9 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
 
   const [showInstructorList, setShowInstructorList] = useState(false);
   const [showAssistantList, setShowAssistantList] = useState(false);
+
+  const params = useSearchParams();
+  const courseId = params.get("id");
 
   const instructorRef = useRef<HTMLDivElement>(null);
   const assistantRef = useRef<HTMLDivElement>(null);
@@ -64,6 +68,42 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
 
     fetchPeople();
   }, [register]);
+  useEffect(() => {
+    if (!courseId) return;
+
+    const fetchCourseStaff = async () => {
+      try {
+        const res = await fetch(`${Backend_Url}/Courses/GetCourseStaff?Id=${courseId}`, {
+          headers: {
+            Authorization: Fake_Token,
+            Accept: "text/plain",
+          },
+        });
+
+        const data = await res.json();
+
+        if (data?.course?.instructors?.length > 0) {
+          const instructor = data.course.instructors[0];
+          setValue("instructorIds", [instructor.id], { shouldValidate: true });
+          setInstructorQuery(instructor.name);
+        }
+
+        if (data?.course?.assistants?.length > 0) {
+          const assistant = data.course.assistants[0];
+          setValue("assistantIds", [assistant.id]);
+          setAssistantQuery(assistant.name);
+        }
+
+        if (typeof data.course.allowRatingOnInstructor === "boolean") {
+          setValue("allowRatingOnInstructor", data.course.allowRatingOnInstructor);
+        }
+      } catch (err) {
+        console.error("Failed to fetch course staff", err);
+      }
+    };
+
+    fetchCourseStaff();
+  }, [courseId, setValue]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

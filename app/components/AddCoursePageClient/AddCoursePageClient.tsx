@@ -70,10 +70,7 @@ export default function AddCoursePageClient() {
           <h2 className="text-xl">Add Courses</h2>
           <p className="text-xs text-[#FFFFFFB0]">let's check your update today.</p>
         </div>
-        <div className="flex text-sm items-center gap-2 bg-[#FFFFFF14] rounded p-[2px]">
-          <IoCheckmark size={18} />
-          <p>Changes saved 2 min ago</p>
-        </div>
+     
 
         <button
           type="button"
