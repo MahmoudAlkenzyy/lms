@@ -39,7 +39,7 @@ const CourseCodeInput = ({ disabled }: { disabled: boolean }) => {
         })}
         placeholder="Enter your course code"
         className={`w-full px-4 py-2 border rounded-md shadow-sm transition focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 ${
-          disabled ? "opacity-50 cursor-not-allowed" : "border-gray-300"
+          disabled ? " !bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"
         }`}
       />
 

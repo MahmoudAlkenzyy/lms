@@ -88,7 +88,7 @@ const CourseLanguages = ({ disabled }: { disabled: boolean }) => {
           disabled={disabled}
           className={
             "w-full p-2 border mt-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500" +
-            (disabled ? " opacity-50 cursor-not-allowed" : "")
+            (disabled ? " !bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white")
           }
         >
           <option value="">Select a language</option>
