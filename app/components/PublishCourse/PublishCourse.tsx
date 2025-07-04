@@ -131,7 +131,7 @@ const PublishCourse = () => {
   };
   return (
     <div className="min-h-screen bg-[#faf7ff] ">
-      <div className="py-2 px-4 sticky  -top-[1px] z-50 bg-black pb-5 text-white rounded-b-lg justify-start gap-3">
+      <div className="py-2 px-4 sticky  top-[70px] z-50 bg-black pb-5 text-white rounded-b-lg justify-start gap-3">
         <div className="flex gap-4 items-center   justify-between ">
           <div className="">
             <h2 className="text-2xl">View Course</h2>
@@ -143,7 +143,7 @@ const PublishCourse = () => {
               onClick={() => router.push(`/Course?id=${courseId}`)}
               className="px-6 py-1 text-sm text-black flex gap-2 items-center bg-white rounded transition-colors duration-200 cursor-pointer"
             >
-              edit
+              Edit
             </button>
             <button
               type="button"

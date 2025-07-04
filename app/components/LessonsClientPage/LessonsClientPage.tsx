@@ -140,7 +140,7 @@ export function LessonsClientPage() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-8">
-      <div className="py-3 px-6 sticky pb-4 -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-between shadow-md">
+      <div className="py-3 px-6 sticky pb-4 top-[70px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-between shadow-md">
         <div>
           <h2 className="text-xl font-semibold">Add lesson items</h2>
           <p className="text-sm text-gray-300">{activeLessonId ? "Editing lesson" : "Select a lesson "}</p>

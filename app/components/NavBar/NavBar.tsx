@@ -4,12 +4,19 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { FaRegBell, FaSearch } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const pathname = usePathname();
+  console.log({ pathname });
 
   return (
-    <div className="flex justify-between  bg-black text-white  py-3">
+    <div
+      className={`flex justify-between ${
+        pathname == "/Courses" ? "bg-[#faf7ff] text-black" : "bg-black text-white sticky top-0 h-[70] z-30"
+      }  py-3`}
+    >
       <div className="">
         {/* <div className="relative w-full max-w-md ">
           <FaSearch className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400" />
@@ -21,7 +28,7 @@ const NavBar = () => {
         </div> */}
       </div>
       <div className="flex gap-4 items-center pe-4">
-        <p className="p-2 bg-[#7337FFA1] text-[#C1BBE9] w-8 h-8 rounded flex justify-center items-center">
+        <p className="p-2 bg-[#C1BBE9] text-[#7337FFA1] w-8 h-8 rounded flex justify-center items-center">
           <FaRegBell />
         </p>
         <Image
@@ -33,7 +40,7 @@ const NavBar = () => {
         />
         <div className="">
           <p className="">name</p>
-          <p className="font-light text-[#FFFFFF8A] text-sm">role</p>
+          <p className="font-light text-[#0000008a] text-sm">role</p>
         </div>
       </div>
       <AnimatePresence>

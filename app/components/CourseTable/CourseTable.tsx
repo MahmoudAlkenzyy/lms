@@ -169,12 +169,11 @@ const CoursesTable = () => {
             </thead>
             <tbody>
               {paginatedCourses.map((course) => (
-                <tr
-                  onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)}
-                  key={course.id}
-                  className="border-b text-center border-[#00000021] hover:bg-gray-50 transition"
-                >
-                  <td className="px-4  py-2 bg ">
+                <tr key={course.id} className="border-b text-center border-[#00000021] hover:bg-gray-50 transition">
+                  <td
+                    className="px-4  py-2 bg "
+                    onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)}
+                  >
                     {course.coverImage ? (
                       <img
                         src={`${Files_Url}${course.coverImage}`}
@@ -184,7 +183,10 @@ const CoursesTable = () => {
                       ""
                     )}
                   </td>
-                  <td className="px-4 ps-0 py-2 text-start max-w-32">
+                  <td
+                    onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)}
+                    className="px-4 ps-0 py-2 text-start max-w-32"
+                  >
                     {" "}
                     <Tooltip.Provider>
                       <Tooltip.Root>
@@ -204,12 +206,22 @@ const CoursesTable = () => {
                       </Tooltip.Root>
                     </Tooltip.Provider>
                   </td>
-                  <td className="px-4 py-2">{course.code || "—"}</td>
-                  <td className="px-4 py-2">{course.instructors?.join(", ") || "—"}</td>
-                  <td className="px-4 py-2">{course.lessonsCount || 0}</td>
-                  <td className="px-4 py-2">{course.duration || "—"}</td>
-                  <td className="px-4 py-2">{course.level || "—"}</td>
-                  <td className="px-4 py-2">
+                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                    {course.code || "—"}
+                  </td>
+                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                    {course.instructors?.join(", ") || "—"}
+                  </td>
+                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                    {course.lessonsCount || 0}
+                  </td>
+                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                    {course.duration || "—"}
+                  </td>
+                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                    {course.level || "—"}
+                  </td>
+                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
                     <span className="bg-[#00E0962B] text-[#00E096] text-nowrap px-3 py-1 rounded-full text-xs font-semibold">
                       {course.status || "—"}
                     </span>

@@ -103,7 +103,7 @@ const LessonsTable = () => {
 
   return (
     <div className="">
-      <div className="py-2 px-4 sticky pb-3  -top-[1px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
+      <div className="py-2 px-4 sticky pb-3  top-[70px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
         {/* <CiTextAlignLeft /> */}
         <div className="">
           <h2 className="text-3xl pb-3">{chapterName || "Add Courses"}</h2>
