@@ -85,9 +85,9 @@ export default function FileUploader({
       </div>
 
       <div className="flex justify-between items-center mt-3">
-        <div className="text-xs text-gray-500">
+        {/* <div className="text-xs text-gray-500">
           {type === "image" ? "JPG, PNG (Max 5MB)" : type === "video" ? "MP4 (Max 50MB)" : "PDF (Max 10MB)"}
-        </div>
+        </div> */}
 
         {previewUrl && (
           <div className="flex gap-2">

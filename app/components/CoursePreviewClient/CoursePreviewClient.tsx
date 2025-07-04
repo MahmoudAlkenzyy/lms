@@ -9,6 +9,7 @@ import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import FileUploader from "../FileUploader/FileUploader";
 
 export function LessonsPreviewPageClient() {
   const searchParams = useSearchParams();
@@ -22,8 +23,8 @@ export function LessonsPreviewPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [videoProgress, setVideoProgress] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isPdf, setIsPdf] = useState(true);
 
-  // const fetchCourse
   const fetchLessonData = async (id: string) => {
     setIsLoading(true);
     setError(null);
@@ -42,6 +43,7 @@ export function LessonsPreviewPageClient() {
         setActiveLessonId(id);
         setVideoProgress(0);
         setIsVideoPlaying(false);
+        setIsPdf(data.lessonType == "Attachment");
       } else {
         throw new Error("Lesson data not found");
       }
@@ -89,6 +91,7 @@ export function LessonsPreviewPageClient() {
       </div>
     </div>
   );
+  console.log({ lessonData });
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-6 bg-gray-50 min-h-screen">
@@ -132,35 +135,28 @@ export function LessonsPreviewPageClient() {
             >
               <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
                 {lessonData.video && (
-                  <div className="space-y-2">
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
-                      <video
-                        src={`${Files_Url}${lessonData.video}`}
-                        poster={lessonData.videoPlaceholder ? `${Files_Url}${lessonData.videoPlaceholder}` : undefined}
-                        controls
-                        className="w-full rounded-lg shadow-sm aspect-video bg-black"
-                        onTimeUpdate={handleVideoProgress}
-                        onPlay={handleVideoPlay}
-                        onPause={handleVideoPause}
-                      />
-                      <div className="absolute bottom-0 left-0 right-0">
-                        <div className="h-1 w-full bg-gray-200">
-                          <div
-                            className="h-full bg-gray-800 transition-all duration-300"
-                            style={{ width: `${videoProgress}%` }}
-                          />
-                        </div>
-                      </div>
-                    </motion.div>
+                  <div className="space-y-4">
+                    <FileUploader
+                      key={`video-${lessonId}`}
+                      id={`video-${lessonId}`}
+                      type={lessonData.type === "Attachment" ? "pdf" : "video"}
+                      bg="/images/uploadImageBg.png"
+                      file={null}
+                      initialPreviewUrl={`${Files_Url}${lessonData.video}`}
+                      onFileChange={() => {}}
+                    />
 
-                    <div className="flex justify-between items-center text-sm text-gray-600">
-                      <span>
-                        {isVideoPlaying ? "Now playing" : "Paused"} • {Math.round(videoProgress)}% completed
-                      </span>
-                      <Tooltip.Provider>
-                        <Tooltip.Root></Tooltip.Root>
-                      </Tooltip.Provider>
-                    </div>
+                    {lessonData.lessonType !== "Attachment" && lessonData.videoPlaceholder && (
+                      <FileUploader
+                        id="videoPlaceholder"
+                        type="image"
+                        bg="/images/uploadImageBg.png"
+                        file={null}
+                        initialPreviewUrl={`${Files_Url}${lessonData.videoPlaceholder}`}
+                        onFileChange={() => {}}
+                        // readOnly
+                      />
+                    )}
                   </div>
                 )}
 
