@@ -14,7 +14,7 @@ export function LessonsPreviewPageClient() {
   const searchParams = useSearchParams();
   const courseId = searchParams.get("courseid");
   const lessonId = searchParams.get("lessonid");
-
+  const chapterId = searchParams.get("chapterid");
   const [lessonData, setLessonData] = useState<any>(null);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
@@ -228,15 +228,25 @@ export function LessonsPreviewPageClient() {
 
       <div className="w-full lg:w-1/3">
         {courseId ? (
-          <div className="sticky top-4 space-y-4">
-            <button
-              type="button"
-              onClick={() => router.push(`/CoursePreviewPublish?courseid=${courseId}`)}
-              className={` px-6 py-1 ms-auto block text-sm text-gray-600 bg-white border border-gray-400 rounded hover:bg-gray-100 transition-colors duration-200 cursor-pointer`}
-              //   disabled={lessons.length == 0}
-            >
-              Preview
-            </button>
+          <div className="sticky top-4 space-y-2">
+            <div className="flex gap-3 items-center justify-end">
+              <button
+                type="button"
+                onClick={() => router.push(`/CoursePreviewPublish?courseid=${courseId}`)}
+                className={` px-6 py-2  block text-sm text-gray-600 bg-white border border-gray-400 rounded hover:bg-gray-100 transition-colors duration-200 cursor-pointer`}
+                //   disabled={lessons.length == 0}
+              >
+                Preview
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push(`/lessons?courseid=${courseId}&chapterid=${chapterId}&lessonid=${lessonId}`)}
+                className={` px-6 py-2  block text-sm text-white bg-indigo-600 border border-gray-400 rounded hover:indigo-600/90 transition-colors duration-200 cursor-pointer`}
+                //   disabled={lessons.length == 0}
+              >
+                Edit
+              </button>
+            </div>
             <CurriculumBar
               courseId={courseId}
               currentLessonId={lessonId ?? ""}

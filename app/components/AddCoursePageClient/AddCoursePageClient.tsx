@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 import { CiTextAlignLeft } from "react-icons/ci";
-import { IoCheckmark } from "react-icons/io5";
 
 import BasicInfoAddCourses from "@/app/components/BasicInfoAddCourses/BasicInfoAddCourses";
 import ContentAddCourses from "@/app/components/CurriculumAddCourses/CurriculumAddCourses";
@@ -106,7 +104,7 @@ export default function AddCoursePageClient() {
 
         <div className="w-1/3 gap-7 flex flex-col ">
           <FormProvider {...sidePanelForm}>
-            <MetaDataAddCourse courseId={courseId} step={step} />
+            <MetaDataAddCourse disabled={step !== "Draft-BasicInfo"} courseId={courseId} step={step} />
           </FormProvider>
         </div>
       </div>

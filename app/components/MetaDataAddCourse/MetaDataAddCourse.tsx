@@ -13,7 +13,7 @@ import CourseCodeInput from "@/app/components/CourseCodeInput/CourseCodeInput";
 import CourseLanguages from "@/app/components/CourseLanguages/CourseLanguages";
 import { Fake_Token } from "../../../constants";
 
-const MetaDataAddCourse = ({ step, courseId }: { step: string; courseId: string }) => {
+const MetaDataAddCourse = ({ step, courseId, disabled }: { step: string; courseId: string; disabled: boolean }) => {
   const { reset } = useFormContext();
 
   useEffect(() => {
@@ -55,15 +55,15 @@ const MetaDataAddCourse = ({ step, courseId }: { step: string; courseId: string 
 
   return (
     <form className="flex flex-col gap-7">
-      <CourseCategoryAddCourses disabled={step !== "Draft-BasicInfo"} />
-      <CourseLevelAddCourse disabled={step !== "Draft-BasicInfo"} />
-      <CourseTagsInput disabled={step !== "Draft-BasicInfo"} />
-      <RatingCourse disabled={step !== "Draft-BasicInfo"} />
-      <CourseCodeInput disabled={step !== "Draft-BasicInfo"} />
-      <CourseDurationInput disabled={step !== "Draft-BasicInfo"} />
-      <CourseLanguages disabled={step !== "Draft-BasicInfo"} />
-      <CourseCertificateToggle disabled={step !== "Draft-BasicInfo"} />
-      <ProgramSelector disabled={step !== "Draft-BasicInfo"} />
+      <CourseCategoryAddCourses disabled={disabled} />
+      <CourseLevelAddCourse disabled={disabled} />
+      <CourseTagsInput disabled={disabled} />
+      <RatingCourse disabled={disabled} />
+      <CourseCodeInput disabled={disabled} />
+      <CourseDurationInput disabled={disabled} />
+      <CourseLanguages disabled={disabled} />
+      <CourseCertificateToggle disabled={disabled} />
+      <ProgramSelector disabled={disabled} />
     </form>
   );
 };

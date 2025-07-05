@@ -7,13 +7,12 @@ import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Backend_Url, Fake_Token } from "@/constants";
 import { toast } from "react-toastify";
-import { CiTextAlignLeft } from "react-icons/ci";
-import { IoCheckmark } from "react-icons/io5";
+import UpdateLessonModal from "../UpdateLessonModal/UpdateLessonModal";
 
 interface Lesson {
   id: string;
   name: string;
-  type: "Video" | "Attachment";
+  lessonType: "Video" | "Attachment";
   duration: string;
 }
 
@@ -23,6 +22,8 @@ const LessonsTable = () => {
   const [loading, setLoading] = useState(true);
   const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
   const [chapterName, setChapterName] = useState();
+  const [selectedLessonToUpdate, setSelectedLessonToUpdate] = useState<Lesson | null>(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const chapterId = searchParams.get("chapterid");
   const CourseId = searchParams.get("courseid");
@@ -100,6 +101,7 @@ const LessonsTable = () => {
   useEffect(() => {
     fetchLessons();
   }, [chapterId]);
+  console.log({ selectedLessonToUpdate });
 
   return (
     <div className="">
@@ -134,18 +136,44 @@ const LessonsTable = () => {
           <p className="text-sm text-gray-500">No lessons found for this section.</p>
         ) : (
           lessons.map((lesson) => (
-            <LessonRow
-              key={lesson.id}
-              type={lesson.type}
-              title={lesson.name}
-              duration={lesson.duration}
-              onEdit={() => router.push(`/lessons?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)}
-              onDelete={() => setLessonToDelete(lesson)}
-            />
+            <>
+              <LessonRow
+                key={lesson.id}
+                type={lesson.lessonType}
+                title={lesson.name}
+                duration={lesson.duration}
+                onClick={() =>
+                  router.push(`/lessons?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)
+                }
+                onPreview={() => router.push(`CoursePreview?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)}
+                onEdit={() => {
+                  console.log({ lesson });
+                  setSelectedLessonToUpdate(lesson);
+
+                  setIsUpdateModalOpen(true);
+                }}
+                onDelete={() => setLessonToDelete(lesson)}
+              />
+            </>
           ))
         )}
 
         <AddLessonModal isOpen={isOpen} setIsOpen={setIsOpen} refetch={fetchLessons} />
+        <UpdateLessonModal
+          isOpen={isUpdateModalOpen}
+          setIsOpen={setIsUpdateModalOpen}
+          lessonData={
+            selectedLessonToUpdate
+              ? {
+                  id: selectedLessonToUpdate.id,
+                  name: selectedLessonToUpdate.name,
+                  type: selectedLessonToUpdate.lessonType,
+                  duration: selectedLessonToUpdate.duration,
+                }
+              : null
+          }
+          refetch={fetchLessons}
+        />
 
         <button
           onClick={() => setIsOpen(true)}

@@ -117,6 +117,11 @@ const CoursesTable = () => {
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = filteredCourses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
+  const navigation = (id: number, status: string) => {
+    status == "Published" || status == "Draft"
+      ? router.push(`/CoursePreviewPublish?courseid=${id}`)
+      : router.push(`/Course?id=${id}`);
+  };
   return (
     <div className="p-4 px-0 bg-white mt-3 rounded-lg shadow-sm overflow-hidden pe-8">
       <div className="flex justify-between items-center flex-wrap gap-4 mb-4 px-4">
@@ -164,16 +169,13 @@ const CoursesTable = () => {
                 <th className="px-4 py-2">Duration</th>
                 <th className="px-4 py-2">Level</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Actions</th>
+                <th className="px-4 py-2 text-end">Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginatedCourses.map((course) => (
                 <tr key={course.id} className="border-b text-center border-[#00000021] hover:bg-gray-50 transition">
-                  <td
-                    className="px-4  py-2 bg "
-                    onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)}
-                  >
+                  <td className="px-4  py-2 bg " onClick={() => navigation(course.id, course.status)}>
                     {course.coverImage ? (
                       <img
                         src={`${Files_Url}${course.coverImage}`}
@@ -184,7 +186,7 @@ const CoursesTable = () => {
                     )}
                   </td>
                   <td
-                    onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)}
+                    onClick={() => navigation(course.id, course.status)}
                     className="px-4 ps-0 py-2 text-start max-w-32"
                   >
                     {" "}
@@ -206,40 +208,42 @@ const CoursesTable = () => {
                       </Tooltip.Root>
                     </Tooltip.Provider>
                   </td>
-                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                  <td onClick={() => navigation(course.id, course.status)} className="px-4 py-2">
                     {course.code || "—"}
                   </td>
-                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                  <td onClick={() => navigation(course.id, course.status)} className="px-4 py-2">
                     {course.instructors?.join(", ") || "—"}
                   </td>
-                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                  <td onClick={() => navigation(course.id, course.status)} className="px-4 py-2">
                     {course.lessonsCount || 0}
                   </td>
-                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                  <td onClick={() => navigation(course.id, course.status)} className="px-4 py-2">
                     {course.duration || "—"}
                   </td>
-                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                  <td onClick={() => navigation(course.id, course.status)} className="px-4 py-2">
                     {course.level || "—"}
                   </td>
-                  <td onClick={() => router.push(`/CoursePreviewPublish?courseid=${course.id}`)} className="px-4 py-2">
+                  <td onClick={() => navigation(course.id, course.status)} className="px-4 py-2">
                     <span className="bg-[#00E0962B] text-[#00E096] text-nowrap px-3 py-1 rounded-full text-xs font-semibold">
                       {course.status || "—"}
                     </span>
                   </td>
-                  <td className="px-4 py-2 flex items-center justify-center gap-3 text-lg text-gray-500">
-                    <div className="bg-[#7337FF1A] rounded flex gap-2 p-2">
+                  <td className="px-4 py-2 flex items-center justify-end gap-3 text-lg text-gray-500">
+                    <div className="bg-[#7337FF1A] rounded flex items-center gap-2 p-2">
                       {/* <button
                         onClick={() => router.push(`/CoursePreview?courseid=${course.id}`)}
                         className="text-violet-600 cursor-pointer"
                       >
                         <FaRegEye />
                       </button> */}
-                      <button
-                        className="text-green-600 cursor-pointer"
-                        onClick={() => router.push(`/Course?id=${course.id}`)}
-                      >
-                        <FaEdit />
-                      </button>
+                      {(course.status == "Draft" || course.status == "Published") && (
+                        <button
+                          className="text-green-600 cursor-pointer"
+                          onClick={() => router.push(`/CourseUpdate?id=${course.id}`)}
+                        >
+                          <FaEdit />
+                        </button>
+                      )}
                       <button
                         className="text-red-500 cursor-pointer"
                         onClick={() => openDeleteModal(course.id, course.name)}

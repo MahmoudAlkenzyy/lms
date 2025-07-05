@@ -1,4 +1,4 @@
-import { FaRegFileAlt, FaRegPlayCircle } from "react-icons/fa";
+import { FaEye, FaRegFileAlt, FaRegPlayCircle } from "react-icons/fa";
 import { FaRegEdit, FaTrashAlt } from "react-icons/fa";
 
 import React from "react";
@@ -10,9 +10,11 @@ interface LessonRowProps {
   duration: string;
   onEdit?: () => void;
   onDelete?: () => void;
+  onPreview?: () => void;
+  onClick?: () => void;
 }
 
-const LessonRow: React.FC<LessonRowProps> = ({ type, title, duration, onEdit, onDelete }) => {
+const LessonRow: React.FC<LessonRowProps> = ({ type, title, duration, onEdit, onDelete, onPreview, onClick }) => {
   const icon =
     type === "Video" ? (
       <FaRegPlayCircle className="text-xl  text-gray-500" />
@@ -34,16 +36,19 @@ const LessonRow: React.FC<LessonRowProps> = ({ type, title, duration, onEdit, on
   }
 
   return (
-    <div className="flex items-center justify-between p-3 bg-white rounded-md mb-2">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between bg-white rounded-md mb-2">
+      <div onClick={onClick} className="flex items-center gap-3 grow  p-3">
         <span>{icon}</span>
         <p className="text-sm text-gray-800">{title}</p>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 bgre  p-3">
         <span className="text-sm text-gray-600">{durationToMinutes(duration)}</span>
 
         <div className="flex gap-2 bg-[#ECE3FF] px-2 py-1 rounded">
+          <button onClick={onPreview} className="text-black cursor-pointer">
+            <FaEye />
+          </button>
           <button onClick={onEdit} className="text-violet-600 cursor-pointer">
             <FaRegEdit />
           </button>

@@ -1,9 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 @import "tailwindcss";
 .ProseMirror {
   outline: none;
   min-height: 100px;
 }
-
 .btn {
   background: transparent;
   /* border: 1px solid #ccc; */
@@ -21,4 +21,8 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+* {
+  font-family: "Manrope", sans-serif;
+  font-optical-sizing: auto;
 }

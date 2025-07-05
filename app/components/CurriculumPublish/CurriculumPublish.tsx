@@ -25,8 +25,9 @@ interface Chapter {
 interface props {
   setVideoDuration: Dispatch<SetStateAction<string>>;
   setAttachmentCount: Dispatch<SetStateAction<number>>;
+  duration: number | undefined;
 }
-export default function CurriculumBarPreview({ setAttachmentCount, setVideoDuration }: props) {
+export default function CurriculumBarPreview({ setAttachmentCount, setVideoDuration, duration }: props) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [expandedChapterId, setExpandedChapterId] = useState<string | null>(null);
   const [totalDuration, setTotalDuration] = useState<string>("00h 00m");
@@ -140,7 +141,8 @@ export default function CurriculumBarPreview({ setAttachmentCount, setVideoDurat
         </span>
 
         <span className="flex gap-1 items-center">
-          <IoMdTime size={19} /> <strong>{totalDuration}</strong> Total Duration
+          <IoMdTime size={19} /> <strong>{duration ? formatMinutesToHours(duration) : totalDuration}</strong> Total
+          Duration
         </span>
       </div>
 
@@ -207,4 +209,13 @@ export default function CurriculumBarPreview({ setAttachmentCount, setVideoDurat
       ))}
     </div>
   );
+}
+function formatMinutesToHours(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+
+  const hoursPart = hours > 0 ? `${hours}h` : "";
+  const minutesPart = mins > 0 ? `${mins}m` : "";
+
+  return `${hoursPart} ${minutesPart}`.trim();
 }

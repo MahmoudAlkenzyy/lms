@@ -230,7 +230,11 @@ const PublishCourse = () => {
                 </div>
               )}
             </div>
-            <CurriculumBarPreview setAttachmentCount={setAttachmentCount} setVideoDuration={setVideoDuration} />
+            <CurriculumBarPreview
+              duration={metaData?.duration}
+              setAttachmentCount={setAttachmentCount}
+              setVideoDuration={setVideoDuration}
+            />
           </div>
           <div className="">
             <div className="bg-white flex flex-col items-center  justify-center p-4 md:p-5 rounded-xl shadow-sm space-y-4">
