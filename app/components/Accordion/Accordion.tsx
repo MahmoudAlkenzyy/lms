@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaChevronDown, FaChevronUp, FaTrashAlt, FaEdit, FaRegEdit } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaTrashAlt, FaEdit, FaRegEdit, FaEye } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Lesson {
@@ -20,12 +20,13 @@ interface Props {
   chapter: Chapter;
   disabled?: boolean;
   onEdit: () => void;
+  onView: () => void;
   onDelete: () => void;
   onEditLesson: (id: string) => void;
   onDeleteLesson: (lessonId: string, lessonName: string) => void;
 }
 
-const Accordion: React.FC<Props> = ({ chapter, disabled, onEdit, onDelete, onDeleteLesson, onEditLesson }) => {
+const Accordion: React.FC<Props> = ({ chapter, disabled, onEdit, onDelete, onDeleteLesson, onEditLesson, onView }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -38,6 +39,17 @@ const Accordion: React.FC<Props> = ({ chapter, disabled, onEdit, onDelete, onDel
       >
         <div className="font-medium text-sm">{chapter.name}</div>
         <div className="flex items-center gap-3">
+          <button
+            className="cursor-pointer "
+            type="button"
+            disabled={disabled}
+            onClick={(e) => {
+              e.stopPropagation();
+              onView();
+            }}
+          >
+            <FaEye size={16} className="text-[#7337FF]" />
+          </button>
           <button
             className="cursor-pointer "
             type="button"

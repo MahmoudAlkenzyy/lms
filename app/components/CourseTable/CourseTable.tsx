@@ -236,14 +236,19 @@ const CoursesTable = () => {
                       >
                         <FaRegEye />
                       </button> */}
-                      {(course.status == "Draft" || course.status == "Published") && (
-                        <button
-                          className="text-green-600 cursor-pointer"
-                          onClick={() => router.push(`/CourseUpdate?id=${course.id}`)}
-                        >
-                          <FaEdit />
-                        </button>
-                      )}
+
+                      <button
+                        className={`  ${
+                          course.status == "Draft" || course.status == "Published"
+                            ? "cursor-not-allowed text-green-600/50"
+                            : "cursor-pointer text-green-600"
+                        }`}
+                        disabled={course.status == "Draft" || course.status == "Published"}
+                        onClick={() => router.push(`/CourseUpdate?id=${course.id}`)}
+                      >
+                        <FaEdit />
+                      </button>
+
                       <button
                         className="text-red-500 cursor-pointer"
                         onClick={() => openDeleteModal(course.id, course.name)}

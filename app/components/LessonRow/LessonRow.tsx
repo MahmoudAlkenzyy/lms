@@ -46,7 +46,7 @@ const LessonRow: React.FC<LessonRowProps> = ({ type, title, duration, onEdit, on
         <span className="text-sm text-gray-600">{durationToMinutes(duration)}</span>
 
         <div className="flex gap-2 bg-[#ECE3FF] px-2 py-1 rounded">
-          <button onClick={onPreview} className="text-black cursor-pointer">
+          <button onClick={onPreview} className="text-[#7337FF] cursor-pointer">
             <FaEye />
           </button>
           <button onClick={onEdit} className="text-violet-600 cursor-pointer">

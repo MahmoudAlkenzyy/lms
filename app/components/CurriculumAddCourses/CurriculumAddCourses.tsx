@@ -18,6 +18,7 @@ interface Chapter {
   id: string;
   name: string;
   lessons: Lesson[];
+  description: string;
 }
 
 interface Props {
@@ -31,6 +32,18 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
   const [loading, setLoading] = useState(false);
   const [chapterToDelete, setChapterToDelete] = useState<{ id: string; name: string } | null>(null);
   const [lessonToDelete, setLessonToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selectedSection, setSelectedSection] = useState<{
+    id: string;
+    name: string;
+    description: string;
+    CourseId: string;
+  }>({
+    id: "",
+    name: "",
+    description: "",
+    CourseId: "",
+  });
 
   const handleDeleteLesson = async () => {
     if (!lessonToDelete) return;
@@ -137,7 +150,16 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
             key={chapter.id}
             chapter={chapter}
             disabled={disabled}
-            onEdit={() => router.push(`/Sections?courseid=${id}&chapterid=${chapter.id}`)}
+            onEdit={() => {
+              setSelectedSection({
+                id: chapter.id,
+                CourseId: id,
+                name: chapter.name,
+                description: chapter.description,
+              });
+              setIsEditOpen(true);
+            }}
+            onView={() => router.push(`/Sections?courseid=${id}&chapterid=${chapter.id}`)}
             onDelete={() => setChapterToDelete({ id: chapter.id, name: chapter.name })}
             onEditLesson={(lessonid) =>
               router.push(`/lessons?courseid=${id}&chapterid=${chapter.id}&lessonid=${lessonid}`)
@@ -147,6 +169,18 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
         ))}
 
         <AddSectionModal id={id} isOpen={isOpen} setIsOpen={setIsOpen} refetch={fetchChapters} />
+        <AddSectionModal
+          isOpen={isEditOpen}
+          setIsOpen={setIsEditOpen}
+          id={id}
+          refetch={fetchChapters}
+          mode="update"
+          sectionId={selectedSection.id}
+          initialData={{
+            name: selectedSection.name,
+            description: selectedSection.description,
+          }}
+        />
       </div>
 
       <ConfirmDeleteModal
