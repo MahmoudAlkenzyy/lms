@@ -1,16 +1,19 @@
-import React, { useEffect, useRef } from "react";
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { Backend_Url, Fake_Token } from "../../../constants";
+import { FiLoader } from "react-icons/fi";
 
 interface Props {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  id: string; // courseId
+  id: string;
   refetch: () => void;
   mode?: "add" | "update";
-  sectionId?: string; // only for update
+  sectionId?: string;
   initialData?: {
     name: string;
     description: string;
@@ -22,15 +25,14 @@ const AddSectionModal: React.FC<Props> = ({ isOpen, setIsOpen, id, refetch, mode
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors },
   } = useFormContext();
 
   const wasOpen = useRef(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen && !wasOpen.current) {
-      // Modal just opened
       if (mode === "update" && initialData) {
         reset({
           sectionName: initialData.name,
@@ -43,10 +45,11 @@ const AddSectionModal: React.FC<Props> = ({ isOpen, setIsOpen, id, refetch, mode
         });
       }
     }
-
     wasOpen.current = isOpen;
   }, [isOpen, mode, initialData, reset]);
+
   const onValid = async (data: any) => {
+    setIsSubmitting(true);
     const formData = new FormData();
     formData.append("Name", data.sectionName);
     formData.append("Description", data.description);
@@ -57,10 +60,8 @@ const AddSectionModal: React.FC<Props> = ({ isOpen, setIsOpen, id, refetch, mode
 
     if (isUpdate && sectionId) {
       formData.append("Id", sectionId);
-      formData.append("CourseId", id);
-    } else {
-      formData.append("CourseId", id);
     }
+    formData.append("CourseId", id);
 
     try {
       const response = await fetch(endpoint, {
@@ -74,12 +75,13 @@ const AddSectionModal: React.FC<Props> = ({ isOpen, setIsOpen, id, refetch, mode
       if (!response.ok) throw new Error("Something went wrong");
 
       toast.success(isUpdate ? "Section updated successfully!" : "Section added successfully!");
-      //   reset(); // clear form fields
       setIsOpen(false);
       refetch();
     } catch (err) {
       toast.error(isUpdate ? "Error updating section" : "Error adding section");
       console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -104,7 +106,6 @@ const AddSectionModal: React.FC<Props> = ({ isOpen, setIsOpen, id, refetch, mode
             </div>
 
             <div className="space-y-4">
-              {/* Section Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Section Name</label>
                 <input
@@ -118,7 +119,6 @@ const AddSectionModal: React.FC<Props> = ({ isOpen, setIsOpen, id, refetch, mode
                 )}
               </div>
 
-              {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
@@ -132,21 +132,29 @@ const AddSectionModal: React.FC<Props> = ({ isOpen, setIsOpen, id, refetch, mode
                 )}
               </div>
 
-              {/* Buttons */}
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
                   className="px-6 py-1 text-sm text-white bg-black rounded"
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleSubmit(onValid)}
-                  className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700 disabled:bg-violet-400 flex items-center gap-2"
                 >
-                  {mode === "update" ? "Update" : "Submit"}
+                  {isSubmitting ? (
+                    <>
+                      <FiLoader className="animate-spin" size={16} />
+                      {mode === "update" ? "Updating..." : "Submitting..."}
+                    </>
+                  ) : (
+                    <>{mode === "update" ? "Update" : "Submit"}</>
+                  )}
                 </button>
               </div>
             </div>

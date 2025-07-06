@@ -195,7 +195,7 @@ export function LessonsClientPage() {
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                   <h3 className="font-medium text-lg mb-4">Lesson Introduction</h3>
                   <Textarea
-                    {...register("intro", { required: "intro is required" })}
+                    {...register("intro", { required: "Introduction is required" })}
                     id="intro"
                     error={errors.intro}
                     placeholder="Enter lesson introduction..."
@@ -232,6 +232,7 @@ export function LessonsClientPage() {
                               file={field.value}
                               initialPreviewUrl={watch("videoPreview")}
                               onFileChange={field.onChange}
+                              bgLayer={isPdf ? "/images/uploadPDF.svg" : "/images/uploadVideo.svg"}
                             />
                             {fieldState.invalid && (
                               <p className="text-red-500 text-sm mt-1">{fieldState.error?.message}</p>
@@ -259,6 +260,7 @@ export function LessonsClientPage() {
                               <FileUploader
                                 id="videoPlaceholder"
                                 type="image"
+                                bgLayer="/images/uploadImage.svg"
                                 bg="/images/uploadImageBg.png"
                                 file={field.value}
                                 initialPreviewUrl={watch("videoPlaceholderPreview")}
@@ -308,6 +310,7 @@ export function LessonsClientPage() {
                                 id={`itemImages${i}-image`}
                                 type="image"
                                 bg="/images/uploadImageBg.png"
+                                bgLayer="/images/uploadImage.svg"
                                 file={field.value}
                                 initialPreviewUrl={watch(`itemImages.${i}.previewUrl`)}
                                 onFileChange={field.onChange}

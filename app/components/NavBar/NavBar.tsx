@@ -39,8 +39,8 @@ const NavBar = () => {
           width={70}
         />
         <div className="">
-          <p className="">name</p>
-          <p className="font-light text-[#0000008a] text-sm">role</p>
+          <p className="">Name</p>
+          <p className={`${pathname == "/Courses" ? "text-[#0000008a]" : "text-white"} font-light  text-sm`}>Role</p>
         </div>
       </div>
       <AnimatePresence>

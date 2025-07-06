@@ -80,7 +80,7 @@ const UpdateLessonModal = ({
       const response = await fetch(`${Backend_Url}/Lessons/UpdateLesson`, {
         method: "POST",
         headers: {
-          Authorization: Fake_Token, // ✅ no 'Content-Type' header — browser sets it
+          Authorization: Fake_Token, //   no 'Content-Type' header — browser sets it
         },
         body: formData,
       });

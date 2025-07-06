@@ -145,13 +145,19 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
                 }}
               />
               <motion.div
-                className="absolute inset-0 z-10 bg-[#ffffffbc] flex items-center justify-center"
-                whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}
+                className="absolute inset-0 z-10  flex items-center justify-center"
+                whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.4)" }}
                 transition={{ duration: 0.2 }}
                 onClick={() => !disabled && inputRef.current?.click()}
               >
-                <div className="text-center p-4">
-                  <Image src="/images/uploadLayer.svg" alt="overlay" width={800} height={400} className="mx-auto " />
+                <div className="text-center ">
+                  <Image
+                    src="/images/uploadImage.svg"
+                    alt="overlay"
+                    width={1200}
+                    height={400}
+                    className="mx-auto opacity-60 "
+                  />
                 </div>
               </motion.div>
             </motion.div>

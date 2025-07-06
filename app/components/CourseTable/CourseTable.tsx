@@ -68,6 +68,12 @@ const CoursesTable = () => {
     setIsModalOpen(true);
   };
 
+  function convertMinutesToHoursMinutes(totalMinutes: number): string {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return `${hours}h ${minutes}m`;
+  }
   const handleDelete = async () => {
     if (!selectedCourseId) return;
 
@@ -84,7 +90,7 @@ const CoursesTable = () => {
       if (!res.ok) throw new Error("Failed to delete course");
 
       toast.update(toastId, {
-        render: "✅ Course deleted successfully",
+        render: "  Course deleted successfully",
         type: "success",
         isLoading: false,
         autoClose: 3000,
@@ -218,7 +224,7 @@ const CoursesTable = () => {
                     {course.lessonsCount || 0}
                   </td>
                   <td onClick={() => navigation(course.id, course.status)} className="px-4 py-2">
-                    {course.duration || "—"}
+                    {convertMinutesToHoursMinutes(course.duration) || "—"}
                   </td>
                   <td onClick={() => navigation(course.id, course.status)} className="px-4 py-2">
                     {course.level || "—"}

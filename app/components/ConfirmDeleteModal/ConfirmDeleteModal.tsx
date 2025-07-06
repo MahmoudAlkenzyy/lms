@@ -9,7 +9,7 @@ interface ConfirmDeleteModalProps {
   onConfirm: () => void;
   title?: string;
   message?: string;
-  courseName?: string; // ✅ new prop
+  courseName?: string; //   new prop
 }
 
 const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({

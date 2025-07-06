@@ -11,6 +11,8 @@ interface FileUploaderProps {
   className?: string;
   initialPreviewUrl?: string;
   file?: File | null;
+  bgLayer: string;
+
   isPreview?: boolean;
   onFileChange?: (file: File | null) => void;
 }
@@ -24,6 +26,7 @@ export default function FileUploader({
   onFileChange,
   className,
   initialPreviewUrl,
+  bgLayer,
 }: FileUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -75,7 +78,7 @@ export default function FileUploader({
         {!previewUrl ? (
           <>
             <img src={bg} alt="background" className="absolute w-full h-full object-cover" />
-            <Image fill src="/images/uploadLayer.svg" alt="overlay" className="z-10 bg-[#ffffffbc]" />
+            <Image fill src={bgLayer} alt="overlay" className="z-10 object-cover opacity-70" />
           </>
         ) : type === "image" ? (
           <img src={previewUrl} alt="preview" className="object-cover w-full h-full" />

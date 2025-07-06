@@ -76,13 +76,13 @@ export default function CurriculumBarPreview({ setAttachmentCount, setVideoDurat
     router.push(`/CoursePreview?courseid=${courseId}&lessonid=${lessonId}`);
   };
 
-  function durationToMinutes(duration: string): string {
-    if (!duration || duration === "00:00:00") return "N/A";
+  function durationToMinutes(duration: string): number {
+    if (!duration || duration === "00:00:00") return 0;
     const parsed = parse(duration, "HH:mm:ss", new Date());
     const hours = parsed.getHours();
     const minutes = parsed.getMinutes();
     const totalMinutes = hours * 60 + minutes;
-    return `${totalMinutes} min`;
+    return totalMinutes;
   }
 
   function calculateTotalDuration(chapters: Chapter[]): number {
@@ -197,7 +197,7 @@ export default function CurriculumBarPreview({ setAttachmentCount, setVideoDurat
                         <span className="text-sm text-gray-800">{lesson.name}</span>
                       </div>
                       <span className="text-xs text-gray-500">
-                        {lesson.duration ? durationToMinutes(lesson.duration) : "N/A"}
+                        {lesson.duration ? formatDuration(durationToMinutes(lesson.duration)) : "N/A"}
                       </span>
                     </button>
                   ))}

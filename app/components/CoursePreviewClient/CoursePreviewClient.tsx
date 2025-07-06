@@ -257,7 +257,6 @@ export function LessonsPreviewPageClient() {
               activeLessonId={activeLessonId}
             />
 
-            {/* Additional sidebar content */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
               <h3 className="font-medium mb-2">Lesson Progress</h3>
               <div className="h-2 w-full bg-gray-200 rounded-full">

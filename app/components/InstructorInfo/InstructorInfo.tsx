@@ -68,6 +68,7 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
 
     fetchPeople();
   }, [register]);
+
   useEffect(() => {
     if (!courseId) return;
 
@@ -129,49 +130,67 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
       <h2 className="text-lg font-semibold text-gray-800">Instructor Info</h2>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        <div className="w-full">
-          <div className="relative w-full" ref={instructorRef}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Instructor *</label>
-            <input
-              type="text"
-              disabled={disabled}
-              value={instructorQuery}
-              onChange={(e) => {
-                setInstructorQuery(e.target.value);
+        {/* Instructor Field */}
+        <div className="w-full relative" ref={instructorRef}>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Instructor </label>
+          <input
+            type="text"
+            disabled={disabled}
+            value={instructorQuery}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value.length < instructorQuery.length) {
+                setInstructorQuery("");
+                setValue("instructorIds", [], { shouldValidate: true });
+              } else {
+                setInstructorQuery(value);
                 setShowInstructorList(true);
+              }
+            }}
+            placeholder="Type to search instructor"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          />
+          {instructorQuery && (
+            <button
+              type="button"
+              onClick={() => {
+                setInstructorQuery("");
+                setValue("instructorIds", [], { shouldValidate: true });
               }}
-              placeholder="Type to search instructor"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-            />
-            {showInstructorList && instructorQuery && (
-              <ul className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-y-auto">
-                {filteredInstructors.length === 0 ? (
-                  <li className="px-4 py-2 text-sm text-red-500">No results found</li>
-                ) : (
-                  filteredInstructors.map((i) => (
-                    <li
-                      key={i.id}
-                      onClick={() => {
-                        setInstructorQuery(i.name);
-                        setValue("instructorIds", [i.id], {
-                          shouldValidate: true,
-                        });
-                        setShowInstructorList(false);
-                      }}
-                      className="px-4 py-2 text-sm hover:bg-violet-100 cursor-pointer"
-                    >
-                      {i.name}
-                    </li>
-                  ))
-                )}
-              </ul>
-            )}
-          </div>
+              className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+            >
+              ✖
+            </button>
+          )}
+
+          {showInstructorList && instructorQuery && (
+            <ul className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-y-auto">
+              {filteredInstructors.length === 0 ? (
+                <li className="px-4 py-2 text-sm text-red-500">No results found</li>
+              ) : (
+                filteredInstructors.map((i) => (
+                  <li
+                    key={i.id}
+                    onClick={() => {
+                      setInstructorQuery(i.name);
+                      setValue("instructorIds", [i.id], { shouldValidate: true });
+                      setShowInstructorList(false);
+                    }}
+                    className="px-4 py-2 text-sm hover:bg-violet-100 cursor-pointer"
+                  >
+                    {i.name}
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
           {errors.instructorIds && (
             <p className="text-sm text-red-500 mt-1">{errors.instructorIds.message as string}</p>
           )}
         </div>
-        <div className="relative w-full" ref={assistantRef}>
+
+        {/* Assistant Field */}
+        <div className="w-full relative" ref={assistantRef}>
           <label className="block text-sm font-medium text-gray-700 mb-1">Assistant (optional)</label>
           <input
             type="text"
@@ -179,14 +198,29 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
             value={assistantQuery}
             onChange={(e) => {
               const value = e.target.value;
-              setAssistantQuery(value);
-              setShowAssistantList(true);
-
-              setValue("assistantIds", [], { shouldValidate: true });
+              if (value.length < assistantQuery.length) {
+                setAssistantQuery("");
+                setValue("assistantIds", [], { shouldValidate: true });
+              } else {
+                setAssistantQuery(value);
+                setShowAssistantList(true);
+              }
             }}
             placeholder="Type to search assistant"
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
+          {assistantQuery && (
+            <button
+              type="button"
+              onClick={() => {
+                setAssistantQuery("");
+                setValue("assistantIds", [], { shouldValidate: true });
+              }}
+              className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+            >
+              ✖
+            </button>
+          )}
           {showAssistantList && assistantQuery && (
             <ul className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-y-auto">
               {filteredAssistants.length === 0 ? (
@@ -211,6 +245,7 @@ const InstructorInfo = ({ disabled }: { disabled: boolean }) => {
         </div>
       </div>
 
+      {/* Toggle */}
       <div className="mt-6 space-y-2">
         <label className="text-sm font-medium text-gray-700">Rating Instructor</label>
         <div className="flex items-center justify-between">
