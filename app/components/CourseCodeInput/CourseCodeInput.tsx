@@ -15,7 +15,7 @@ const CourseCodeInput = ({ disabled }: { disabled: boolean }) => {
   console.log({ errors });
 
   useEffect(() => {
-    if (code?.trim()) {
+    if (code?.trim() && code.length < 20) {
       clearErrors("code");
     }
   }, [code, clearErrors]);
