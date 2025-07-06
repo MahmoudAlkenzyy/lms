@@ -86,8 +86,6 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
 
       {loading ? (
         <p className="text-gray-500 text-sm">Loading...</p>
-      ) : error ? (
-        <p className="text-red-500 text-sm">{error}</p>
       ) : (
         <>
           <input
@@ -110,6 +108,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
               disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"
             }`}
           />
+
           <datalist id="tags-list">
             {availableTags.map((tag) => (
               <option key={tag.id} value={tag.name} />
@@ -117,6 +116,7 @@ const CourseTagsInput = ({ disabled }: { disabled: boolean }) => {
           </datalist>
 
           {selectedTagIds.length > 10 && <p className="text-yellow-600 text-sm">Maximum of 10 tags allowed</p>}
+          {error && <p className="text-red-500 text-sm">{error}</p> }
         </>
       )}
 

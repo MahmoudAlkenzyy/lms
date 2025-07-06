@@ -39,8 +39,13 @@ export const RichEditor: React.FC<RichEditorProps> = ({
     content: currentValue,
     editable: !disabled,
     onUpdate: ({ editor }) => {
-      const content = editor.getHTML() ?? "";
-      setValue(name, content, { shouldValidate: true });
+      const html = editor.getHTML();
+      const isEmpty = editor.isEmpty || html === "<p></p>";
+
+      setValue(name, isEmpty ? "" : html, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     },
   });
 
