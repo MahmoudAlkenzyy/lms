@@ -148,7 +148,7 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
                 className="absolute inset-0 z-10 bg-[#ffffffbc] flex items-center justify-center"
                 whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}
                 transition={{ duration: 0.2 }}
-                onClick={() => inputRef.current?.click()}
+                onClick={() => !disabled && inputRef.current?.click()}
               >
                 <div className="text-center p-4">
                   <Image src="/images/uploadLayer.svg" alt="overlay" width={800} height={400} className="mx-auto " />

@@ -14,6 +14,7 @@ interface Lesson {
   name: string;
   lessonType: "Video" | "Attachment";
   duration: string;
+  createdDate: string;
 }
 
 const LessonsTable = () => {
@@ -21,9 +22,10 @@ const LessonsTable = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
-  const [chapterName, setChapterName] = useState();
+  const [chapterName, setChapterName] = useState("");
   const [selectedLessonToUpdate, setSelectedLessonToUpdate] = useState<Lesson | null>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
   const searchParams = useSearchParams();
   const chapterId = searchParams.get("chapterid");
   const CourseId = searchParams.get("courseid");
@@ -44,10 +46,10 @@ const LessonsTable = () => {
       });
 
       const data = await res.json();
-      setChapterName(data.chapter.name);
-      console.log(data.chapter.lessons);
+      setChapterName(data.chapter?.name || "");
+
       if (data.isSuccess && Array.isArray(data.chapter.lessons)) {
-        const mappedLessons = data.chapter.lessons.map((lesson: any) => {
+        const mappedLessons: [Lesson] = data.chapter.lessons.map((lesson: Lesson) => {
           let normalizedType: "Video" | "Attachment" = "Video";
 
           if (typeof lesson.lessonType === "string") {
@@ -61,8 +63,12 @@ const LessonsTable = () => {
             name: lesson.name,
             lessonType: normalizedType,
             duration: lesson.duration || "00:00:00",
+            createdDate: lesson.createdDate || "",
           };
         });
+
+        // ✅ Sort lessons by createdDate (newest first)
+        mappedLessons.sort((b, a) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
 
         setLessons(mappedLessons);
       } else {
@@ -89,46 +95,41 @@ const LessonsTable = () => {
 
       if (!res.ok) throw new Error("Failed to delete lesson");
 
-      toast.success(" Lesson deleted successfully");
+      toast.success("Lesson deleted successfully");
       setLessonToDelete(null);
       fetchLessons();
     } catch (error) {
-      console.error("  Error deleting lesson", error);
-      toast.error("  Failed to delete lesson");
+      console.error("Error deleting lesson", error);
+      toast.error("Failed to delete lesson");
     }
   };
 
   useEffect(() => {
     fetchLessons();
   }, [chapterId]);
-  console.log({ selectedLessonToUpdate });
 
   return (
     <div className="">
-      <div className="py-2 px-4 sticky pb-3  top-[70px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
-        {/* <CiTextAlignLeft /> */}
+      <div className="py-2 px-4 sticky pb-3 top-[70px] z-50 bg-black text-white flex flex-wrap items-center rounded-b-lg justify-start gap-3">
         <div className="">
           <h2 className="text-3xl pb-3">{chapterName || "Add Courses"}</h2>
           <p className="text-xs text-[#FFFFFFB0]">Add and customize lessons.</p>
         </div>
 
-        <div className="flex gap-4 items-center ms-auto  justify-end ">
+        <div className="flex gap-4 items-center ms-auto justify-end">
           <button
             type="button"
             onClick={() => router.push(`/CoursePreviewPublish?courseid=${CourseId}`)}
             className={`${
-              lessons.length == 0 && "!opacity-50 !cursor-not-allowed"
+              lessons.length === 0 && "!opacity-50 !cursor-not-allowed"
             } px-6 py-1 text-sm text-gray-600 bg-white border border-gray-400 rounded hover:bg-gray-100 transition-colors duration-200 cursor-pointer`}
-            disabled={lessons.length == 0}
+            disabled={lessons.length === 0}
           >
             Preview
           </button>
-
-          {/* <button className="px-6 py-1 text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors duration-200 cursor-pointer">
-            Save to draft
-          </button> */}
         </div>
       </div>
+
       <div className="flex flex-col gap-3 mt-5 mx-3 mb-3">
         {loading ? (
           <p>Loading lessons...</p>
@@ -136,29 +137,26 @@ const LessonsTable = () => {
           <p className="text-sm text-gray-500">No lessons found for this section.</p>
         ) : (
           lessons.map((lesson) => (
-            <>
-              <LessonRow
-                key={lesson.id}
-                type={lesson.lessonType}
-                title={lesson.name}
-                duration={lesson.duration}
-                onClick={() =>
-                  router.push(`/lessons?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)
-                }
-                onPreview={() => router.push(`CoursePreview?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)}
-                onEdit={() => {
-                  console.log({ lesson });
-                  setSelectedLessonToUpdate(lesson);
-
-                  setIsUpdateModalOpen(true);
-                }}
-                onDelete={() => setLessonToDelete(lesson)}
-              />
-            </>
+            <LessonRow
+              key={lesson.id}
+              type={lesson.lessonType}
+              title={lesson.name}
+              duration={lesson.duration}
+              onClick={() => router.push(`/lessons?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)}
+              onPreview={() =>
+                router.push(`/CoursePreview?courseid=${CourseId}&chapterid=${chapterId}&lessonid=${lesson.id}`)
+              }
+              onEdit={() => {
+                setSelectedLessonToUpdate(lesson);
+                setIsUpdateModalOpen(true);
+              }}
+              onDelete={() => setLessonToDelete(lesson)}
+            />
           ))
         )}
 
         <AddLessonModal isOpen={isOpen} setIsOpen={setIsOpen} refetch={fetchLessons} />
+
         <UpdateLessonModal
           isOpen={isUpdateModalOpen}
           setIsOpen={setIsUpdateModalOpen}

@@ -86,7 +86,13 @@ const CurriculumAddCourses: React.FC<Props> = ({ id, disabled }) => {
 
       const data = await res.json();
       if (data.isSuccess && data.chapters?.items) {
-        setChapters(data.chapters.items);
+        const sortedChapters = [...data.chapters.items].sort((a, b) => {
+          const dateA = new Date(a.createdDate).getTime();
+          const dateB = new Date(b.createdDate).getTime();
+          return dateB - dateA;
+        });
+
+        setChapters(sortedChapters);
       } else {
         console.warn("  No chapters found or unexpected response:", data);
       }
