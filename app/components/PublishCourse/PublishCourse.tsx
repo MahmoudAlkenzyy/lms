@@ -129,6 +129,8 @@ const PublishCourse = () => {
       });
     }
   };
+  console.log({ basicInfo });
+
   return (
     <div className="min-h-screen bg-[#faf7ff] ">
       <div className="py-2 px-4 sticky  top-[70px] z-50 bg-black pb-5 text-white rounded-b-lg justify-start gap-3">
@@ -142,7 +144,7 @@ const PublishCourse = () => {
               type="button"
               onClick={() =>
                 basicInfo?.status == "Published" || basicInfo?.status == "Draft"
-                  ? router.push(`/CoursePreviewPublish?courseid=${courseId}`)
+                  ? router.push(`/CourseUpdate?id=${courseId}`)
                   : router.push(`/Course?id=${courseId}`)
               }
               className="px-6 py-1 text-sm text-black flex gap-2 items-center bg-white rounded transition-colors duration-200 cursor-pointer"
