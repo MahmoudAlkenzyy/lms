@@ -183,21 +183,23 @@ export function LessonsPreviewPageClient() {
                         transition={{ delay: 0.1 * idx }}
                         whileHover={{ scale: 1.01 }}
                       >
-                        <div className="relative group">
-                          <img
-                            src={`${Files_Url}${img.url}`}
-                            alt={`Lesson Image ${idx + 1}`}
-                            className="rounded-lg w-full h-48 object-cover"
-                          />
-                          <a
-                            href={`${Files_Url}${img.url}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="absolute top-2 right-2 bg-white/80 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white"
-                          >
-                            <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-700" />
-                          </a>
-                        </div>
+                        {img.url && (
+                          <div className="relative group">
+                            <img
+                              src={`${Files_Url}${img.url}`}
+                              alt={`Lesson Image ${idx + 1}`}
+                              className="rounded-lg w-full h-48 object-cover"
+                            />
+                            <a
+                              href={`${Files_Url}${img.url}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="absolute top-2 right-2 bg-white/80 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white"
+                            >
+                              <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-700" />
+                            </a>
+                          </div>
+                        )}
                         {img.description && <p className="text-sm text-gray-600 mt-2">{img.description}</p>}
                       </motion.div>
                     ))}
