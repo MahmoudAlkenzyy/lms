@@ -45,7 +45,7 @@ const CoursesTable = () => {
         const sortedCourses = [...data.courses.items].sort((a, b) => {
           const dateA = new Date(a.createdDate).getTime();
           const dateB = new Date(b.createdDate).getTime();
-          return dateB - dateA; // Newest to oldest
+          return dateB - dateA;
         });
         setCourses(sortedCourses);
       } else {

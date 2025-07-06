@@ -140,7 +140,11 @@ const PublishCourse = () => {
           <div className=" flex gap-5">
             <button
               type="button"
-              onClick={() => router.push(`/Course?id=${courseId}`)}
+              onClick={() =>
+                basicInfo?.status == "Published" || basicInfo?.status == "Draft"
+                  ? router.push(`/CoursePreviewPublish?courseid=${courseId}`)
+                  : router.push(`/Course?id=${courseId}`)
+              }
               className="px-6 py-1 text-sm text-black flex gap-2 items-center bg-white rounded transition-colors duration-200 cursor-pointer"
             >
               Edit
