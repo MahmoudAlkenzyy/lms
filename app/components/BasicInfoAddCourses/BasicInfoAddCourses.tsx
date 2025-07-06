@@ -97,9 +97,11 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
             type="button"
             disabled={disabled}
             onClick={() => inputRef.current?.click()}
-            className="rounded transition-colors cursor-pointer text-[#7337FF] text-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className={`rounded transition-colors  ${
+              disabled ? "text-[#7337FF]/80" : "text-[#7337FF] cursor-pointer"
+            } text-sm `}
+            whileHover={{ scale: !disabled ? 1.05 : 1 }}
+            whileTap={{ scale: !disabled ? 0.95 : 1 }}
           >
             Click to Change
           </motion.button>

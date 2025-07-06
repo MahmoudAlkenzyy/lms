@@ -71,8 +71,11 @@ export default function AddCoursePageClient() {
 
         <button
           type="button"
+          disabled={["Draft", "Draft-StaffInfo", "Published"].includes(step)}
           onClick={handleAllSubmits}
-          className="px-6 py-1 ms-auto text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors"
+          className={`${
+            ["Draft", "Draft-StaffInfo", "Published"].includes(step) && "!bg-[#885af5] cursor-not-allowed"
+          } px-6 py-1 ms-auto text-sm text-white bg-[#7337FF] rounded hover:bg-[#5e2dcc] transition-colors`}
         >
           Save to draft
         </button>
