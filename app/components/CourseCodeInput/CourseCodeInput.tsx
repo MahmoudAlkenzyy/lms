@@ -12,6 +12,7 @@ const CourseCodeInput = ({ disabled }: { disabled: boolean }) => {
   } = useFormContext();
 
   const code = watch("code");
+  console.log({ errors });
 
   useEffect(() => {
     if (code?.trim()) {
@@ -36,10 +37,14 @@ const CourseCodeInput = ({ disabled }: { disabled: boolean }) => {
         disabled={disabled}
         {...register("code", {
           required: "Course code is required",
+          maxLength: {
+            value: 20,
+            message: "Course code must be 20 characters or less",
+          },
         })}
         placeholder="Enter your course code"
         className={`w-full px-4 py-2 border rounded-md shadow-sm transition focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 ${
-          disabled ? " !bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"
+          disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"
         }`}
       />
 

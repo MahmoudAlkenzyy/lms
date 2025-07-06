@@ -7,6 +7,7 @@ import { Backend_Url, Fake_Token, Files_Url } from "../../../constants";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 
 interface Props {
   setStep: (step: string) => void;
@@ -30,12 +31,23 @@ const BasicInfoAddCourses: React.FC<Props> = ({ disabled, setCourseId, setStep }
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
+      const isImage = file.type.startsWith("image/");
+
+      if (!isImage) {
+        toast.error("Invalid file type. Please upload an image only.");
+        if (inputRef.current) inputRef.current.value = "";
+
+        return;
+      }
+
       const imageUrl = URL.createObjectURL(file);
       setImage(imageUrl);
       setValue("CoverImage", file, { shouldValidate: true });
     }
   };
+
   useEffect(() => {
     register("Description", {
       required: "Description is required",

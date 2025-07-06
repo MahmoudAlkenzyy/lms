@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { FaRegEdit } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 interface FileUploaderProps {
   id: string;
@@ -46,7 +47,21 @@ export default function FileUploader({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] || null;
+
     if (f) {
+      const mimeType = f.type;
+
+      const isValid =
+        (type === "image" && mimeType.startsWith("image/")) ||
+        (type === "video" && mimeType.startsWith("video/")) ||
+        (type === "pdf" && mimeType === "application/pdf");
+
+      if (!isValid) {
+        toast.error(`Invalid file type. Please upload a valid ${type.toLowerCase()} file.`);
+        inputRef.current!.value = ""; // Clear the input
+        return;
+      }
+
       const url = URL.createObjectURL(f);
       setPreviewUrl(url);
       onFileChange?.(f);
