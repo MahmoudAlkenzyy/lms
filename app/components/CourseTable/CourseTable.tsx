@@ -239,11 +239,11 @@ const CoursesTable = () => {
 
                       <button
                         className={`  ${
-                          course.status == "Draft" || course.status == "Published"
+                          course.status !== "Draft" && course.status !== "Published"
                             ? "cursor-not-allowed text-green-600/50"
                             : "cursor-pointer text-green-600"
                         }`}
-                        disabled={course.status == "Draft" || course.status == "Published"}
+                        disabled={course.status !== "Draft" && course.status !== "Published"}
                         onClick={() => router.push(`/CourseUpdate?id=${course.id}`)}
                       >
                         <FaEdit />
