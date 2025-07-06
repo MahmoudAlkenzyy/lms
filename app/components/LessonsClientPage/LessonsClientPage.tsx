@@ -215,7 +215,13 @@ export function LessonsClientPage() {
                       <Controller
                         control={control}
                         name={"video"}
-                        rules={{ required: `${isPdf ? "pdf" : "video"} is required` }}
+                        rules={{
+                          validate: (value) => {
+                            const preview = watch("videoPreview");
+                            if (!value && !preview) return isPdf ? "PDF is required" : "Video is required";
+                            return true;
+                          },
+                        }}
                         render={({ field, fieldState }) => (
                           <>
                             <FileUploader
@@ -241,7 +247,13 @@ export function LessonsClientPage() {
                         <Controller
                           control={control}
                           name="videoPlaceholder"
-                          rules={{ required: "Video Placeholder is required" }}
+                          rules={{
+                            validate: (value) => {
+                              const preview = watch("videoPlaceholderPreview");
+                              if (!value && !preview) return "Video Placeholder is required";
+                              return true;
+                            },
+                          }}
                           render={({ field, fieldState }) => (
                             <>
                               <FileUploader
