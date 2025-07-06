@@ -214,8 +214,8 @@ export function LessonsClientPage() {
                       </label>
                       <Controller
                         control={control}
-                        name="video"
-                        rules={{ required: "Video is required" }}
+                        name={"video"}
+                        rules={{ required: `${isPdf ? "pdf" : "video"} is required` }}
                         render={({ field, fieldState }) => (
                           <>
                             <FileUploader
@@ -268,6 +268,7 @@ export function LessonsClientPage() {
                         id="description"
                         placeholder="Enter detailed lesson description..."
                         rows={6}
+                        error={errors.description}
                         className="min-h-[150px]"
                       />
                     </div>

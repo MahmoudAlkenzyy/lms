@@ -2,6 +2,8 @@
 import { motion } from "framer-motion";
 
 const Textarea = ({ placeholder, id, className = "", error, ...props }: any) => {
+  console.log({ error, props });
+
   return (
     <div className="">
       <motion.div

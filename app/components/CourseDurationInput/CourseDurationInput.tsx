@@ -16,8 +16,9 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
   const watchedAllowDynamic = useWatch({ control, name: "allowDynamicDuration" });
   const watchedDuration = watch("duration");
 
-  const [isAutoDuration, setIsAutoDuration] = useState(false);
+  console.log({ watchedAllowDynamic });
 
+  const [isAutoDuration, setIsAutoDuration] = useState(false);
   useEffect(() => {
     if (watchedAllowDynamic !== undefined) {
       setIsAutoDuration(Boolean(watchedAllowDynamic));
@@ -87,7 +88,7 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
         <button
           type="button"
           disabled={disabled}
-          onClick={handleToggle}
+          onClick={handleToggle} // already defined correctly
           className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${
             isAutoDuration ? "bg-violet-600" : "bg-gray-300"
           } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -98,6 +99,7 @@ const CourseDurationInput = ({ disabled }: { disabled: boolean }) => {
             }`}
           />
         </button>
+        <input type="hidden" {...register("allowDynamicDuration")} />
       </div>
     </motion.div>
   );
